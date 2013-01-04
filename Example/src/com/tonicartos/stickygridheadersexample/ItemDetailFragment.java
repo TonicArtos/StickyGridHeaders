@@ -54,7 +54,6 @@ public class ItemDetailFragment extends SherlockFragment {
         if (mItem != null) {
             ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.content);
         }
-
         return rootView;
     }
 }

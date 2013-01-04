@@ -28,40 +28,7 @@ import android.widget.ListView;
  * interface.
  */
 public class ItemListFragment extends SherlockFragment implements OnItemClickListener {
-
-    /**
-     * The serialization (saved instance state) Bundle key representing the
-     * activated item position. Only used on tablets.
-     */
-    private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private static final String KEY_LIST_POSITION = "key_list_position";
-
-    /**
-     * The fragment's current callback object, which is notified of list item
-     * clicks.
-     */
-    private Callbacks mCallbacks = sDummyCallbacks;
-
-    /**
-     * The current activated item position. Only used on tablets.
-     */
-    private int mActivatedPosition = ListView.INVALID_POSITION;
-
-    private StickyGridHeadersGridView gridView;
-
-    private int firstVisible;
-
-    /**
-     * A callback interface that all activities containing this fragment must
-     * implement. This mechanism allows activities to be notified of item
-     * selections.
-     */
-    public interface Callbacks {
-        /**
-         * Callback for when an item has been selected.
-         */
-        public void onItemSelected(String id);
-    }
 
     /**
      * A dummy implementation of the {@link Callbacks} interface that does
@@ -74,36 +41,29 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     };
 
     /**
+     * The serialization (saved instance state) Bundle key representing the
+     * activated item position. Only used on tablets.
+     */
+    private static final String STATE_ACTIVATED_POSITION = "activated_position";
+    private int firstVisible;
+    private StickyGridHeadersGridView gridView;
+
+    /**
+     * The current activated item position. Only used on tablets.
+     */
+    private int mActivatedPosition = ListView.INVALID_POSITION;
+
+    /**
+     * The fragment's current callback object, which is notified of list item
+     * clicks.
+     */
+    private Callbacks mCallbacks = sDummyCallbacks;
+
+    /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
      */
     public ItemListFragment() {
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_list, container, false);
-    }
-
-    @Override
-    public void onViewCreated(View view, Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-
-        gridView = (StickyGridHeadersGridView) view.findViewById(R.id.asset_grid);
-        gridView.setOnItemClickListener(this);
-        gridView.setNumColumns(3);
-        gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, android.R.layout.simple_list_item_1, android.R.layout.simple_list_item_1));
-
-        if (savedInstanceState != null) {
-            firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
-        }
-
-        gridView.setSelection(firstVisible);
-
-        // Restore the previously serialized activated item position.
-        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
-            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
-        }
     }
 
     @Override
@@ -116,6 +76,11 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         }
 
         mCallbacks = (Callbacks) activity;
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_item_list, container, false);
     }
 
     @Override
@@ -142,6 +107,27 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         }
     }
 
+    @Override
+    public void onViewCreated(View view, Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        gridView = (StickyGridHeadersGridView) view.findViewById(R.id.asset_grid);
+        gridView.setOnItemClickListener(this);
+        gridView.setNumColumns(3);
+        gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, android.R.layout.simple_list_item_1, android.R.layout.simple_list_item_1));
+
+        if (savedInstanceState != null) {
+            firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
+        }
+
+        gridView.setSelection(firstVisible);
+
+        // Restore the previously serialized activated item position.
+        if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
+            setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
+        }
+    }
+
     /**
      * Turns on activate-on-click mode. When this mode is on, list items will be
      * given the 'activated' state when touched.
@@ -165,5 +151,17 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         }
 
         mActivatedPosition = position;
+    }
+
+    /**
+     * A callback interface that all activities containing this fragment must
+     * implement. This mechanism allows activities to be notified of item
+     * selections.
+     */
+    public interface Callbacks {
+        /**
+         * Callback for when an item has been selected.
+         */
+        public void onItemSelected(String id);
     }
 }
