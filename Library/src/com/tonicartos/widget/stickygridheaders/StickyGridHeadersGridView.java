@@ -1,4 +1,4 @@
-package com.tonicartos.widgets.stickygridheaders;
+package com.tonicartos.widget.stickygridheaders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -11,10 +11,14 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
-public class StickyGridHeadersGridView extends GridView implements OnScrollListener {
+public class StickyGridHeadersGridView extends GridView implements OnScrollListener, android.widget.AdapterView.OnItemClickListener, android.widget.AdapterView.OnItemSelectedListener, android.widget.AdapterView.OnItemLongClickListener {
 
     private StickyGridHeadersAdapterWrapper adapter;
     private boolean areHeadersSticky = true;
@@ -42,6 +46,9 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private OnScrollListener scrollListener;
     private List<View> headerRequests = new ArrayList<View>();
+    private OnItemClickListener onItemClickListener;
+    private OnItemLongClickListener onItemLongClickListener;
+    private OnItemSelectedListener onItemSelectedListener;
 
     public StickyGridHeadersGridView(Context context) {
         super(context);
@@ -68,6 +75,24 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             scrollListener.onScrollStateChanged(view, scrollState);
         }
 
+    }
+
+    @Override
+    public void setOnItemClickListener(android.widget.AdapterView.OnItemClickListener listener) {
+        this.onItemClickListener = listener;
+        super.setOnItemClickListener(this);
+    }
+
+    @Override
+    public void setOnItemLongClickListener(android.widget.AdapterView.OnItemLongClickListener listener) {
+        this.onItemLongClickListener = listener;
+        super.setOnItemLongClickListener(this);
+    }
+
+    @Override
+    public void setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener listener) {
+        this.onItemSelectedListener = listener;
+        super.setOnItemSelectedListener(this);
     }
 
     @Override
@@ -122,14 +147,14 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         List<Integer> vis = new ArrayList<Integer>();
         int vi = 0;
-        for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition(); i ++) {
+        for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition(); i++) {
             long id = getItemIdAtPosition(i);
             if (id == -2) {
                 vis.add(vi);
             }
             vi++;
         }
-        
+
         for (int i = 0; i < vis.size(); i++) {
             View frame = getChildAt(vis.get(i));
             View header = (View) frame.getTag();
@@ -138,8 +163,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
             header.measure(widthMeasureSpec, heightMeasureSpec);
             header.layout(getLeft() + getPaddingLeft(), 0, getRight() - getPaddingRight(), frame.getHeight());
-            
-            
+
             clippingRect.left = getPaddingLeft();
             clippingRect.right = getWidth() - getPaddingRight();
             clippingRect.bottom = frame.getBottom();
@@ -175,5 +199,25 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     public void requestDraw(View headerView) {
         headerRequests.add(headerView);
+    }
+
+    @Override
+    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+        onItemClickListener.onItemClick(parent, view, adapter.translatePosition(position).position, id);
+    }
+
+    @Override
+    public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+        return onItemLongClickListener.onItemLongClick(parent, view, adapter.translatePosition(position).position, id);
+    }
+
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+        onItemSelectedListener.onItemSelected(parent, view, adapter.translatePosition(position).position, id);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+        onItemSelectedListener.onNothingSelected(parent);
     }
 }

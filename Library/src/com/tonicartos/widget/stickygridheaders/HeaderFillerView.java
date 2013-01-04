@@ -1,4 +1,4 @@
-package com.tonicartos.widgets.stickygridheaders;
+package com.tonicartos.widget.stickygridheaders;
 
 import android.content.Context;
 import android.graphics.Canvas;
@@ -6,19 +6,19 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
 
-public class HeaderView extends FrameLayout {
+public class HeaderFillerView extends FrameLayout {
     private StickyGridHeadersGridView stickyGridView;
     private int forcedWidth;
 
-    public HeaderView(Context context) {
+    public HeaderFillerView(Context context) {
         super(context);
     }
 
-    public HeaderView(Context context, AttributeSet attrs) {
+    public HeaderFillerView(Context context, AttributeSet attrs) {
         super(context, attrs);
     }
 
-    public HeaderView(Context context, AttributeSet attrs, int defStyle) {
+    public HeaderFillerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
     

@@ -1,4 +1,4 @@
-package com.tonicartos.widgets.stickygridheaders;
+package com.tonicartos.widget.stickygridheaders;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -117,7 +117,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Position adapterPosition = translatePosition(position);
         if (adapterPosition.position == POSITION_HEADER) {
-            View v = getHeaderFillerView(adapterPosition.position, convertView, parent);
+            View v = getFillerView(convertView, parent);
             convertView = (View) v.getTag();
             View header = delegate.getHeaderView(adapterPosition.header, convertView, parent);
             v.setTag(header);
@@ -178,7 +178,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
     private View getHeaderFillerView(int headerPosition, View convertView, ViewGroup parent) {
         if (convertView == null) {
-            HeaderView headerView = new HeaderView(context);
+            HeaderFillerView headerView = new HeaderFillerView(context);
             headerView.forceWidth(gridView.getWidth());
             convertView = headerView;
         }
@@ -189,7 +189,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
         protected View headerView;
     }
 
-    private Position translatePosition(int position) {
+    protected Position translatePosition(int position) {
         // Translate GridView position to Adapter position.
         int place = position;
         int i;

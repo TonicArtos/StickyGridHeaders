@@ -1,4 +1,4 @@
-package com.tonicartos.widgets.stickygridheaders;
+package com.tonicartos.widget.stickygridheaders;
 
 import android.view.View;
 import android.view.ViewGroup;

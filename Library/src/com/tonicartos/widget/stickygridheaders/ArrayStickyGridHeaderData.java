@@ -1,10 +1,10 @@
-package com.tonicartos.widgets.stickygridheaders;
+package com.tonicartos.widget.stickygridheaders;
 
-public class SimpleStickyGridHeaderData {
+public class ArrayStickyGridHeaderData {
     protected int count;
     protected String header;
 
-    public SimpleStickyGridHeaderData(String header, int count) {
+    public ArrayStickyGridHeaderData(String header, int count) {
         this.header = header;
         this.count = count;
     }
