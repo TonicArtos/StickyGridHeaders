@@ -7,6 +7,7 @@ import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
@@ -67,10 +68,33 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-        // TODO Auto-generated method stub
+    	if(scrollListener!=null){
+			scrollListener.onScroll(view,firstVisibleItem,visibleItemCount,totalItemCount);
+		}
+    	
+    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO){
+			scrollChanged(firstVisibleItem);
+		}
     }
 
-    @Override
+    private void scrollChanged(int firstVisibleItem) {
+    	if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky) { 
+    		return;
+    	}
+    	
+    	View firstItem = (View)getItemAtPosition(firstVisibleItem);
+    	if(header == null) {
+    		header = (View) firstItem.getTag();
+    	} else {
+    		View headerItem = (View) firstItem.getTag();
+    		if(headerItem.equals(header) ) {
+    			header = headerItem;
+    		}
+    	}
+    	
+	}
+
+	@Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         if (scrollListener != null) {
             scrollListener.onScrollStateChanged(view, scrollState);
@@ -78,6 +102,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     }
 
+    
     @Override
     public void setOnItemClickListener(android.widget.AdapterView.OnItemClickListener listener) {
         this.onItemClickListener = listener;
