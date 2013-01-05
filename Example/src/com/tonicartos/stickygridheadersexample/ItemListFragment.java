@@ -4,7 +4,6 @@ import com.actionbarsherlock.app.SherlockFragment;
 import com.tonicartos.stickygridheadersexample.dummy.DummyContent;
 import com.tonicartos.stickygridheadersexample.dummy.DummyContent.DummyItem;
 import com.tonicartos.widget.stickygridheaders.ArrayStickyGridHeadersAdapter;
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -16,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.GridView;
 import android.widget.ListView;
 
 /**
@@ -46,7 +46,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
     private int firstVisible;
-    private StickyGridHeadersGridView gridView;
+    private GridView gridView;
 
     /**
      * The current activated item position. Only used on tablets.
@@ -80,7 +80,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        return inflater.inflate(R.layout.fragment_item_list, container, false);
+        return inflater.inflate(R.layout.fragment_item_grid, container, false);
     }
 
     @Override
@@ -111,7 +111,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        gridView = (StickyGridHeadersGridView) view.findViewById(R.id.asset_grid);
+        gridView = (GridView) view.findViewById(R.id.asset_grid);
         gridView.setOnItemClickListener(this);
         gridView.setNumColumns(3);
         gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, android.R.layout.simple_list_item_1, android.R.layout.simple_list_item_1));
