@@ -117,7 +117,8 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         Position adapterPosition = translatePosition(position);
         if (adapterPosition.position == POSITION_HEADER) {
-            View v = getFillerView(convertView, parent);
+            View v = getHeaderFillerView(adapterPosition.header, convertView, parent);
+            ((HeaderFillerView) v).setId(position);
             convertView = (View) v.getTag();
             View header = delegate.getHeaderView(adapterPosition.header, convertView, parent);
             v.setTag(header);
@@ -177,12 +178,11 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     }
 
     private View getHeaderFillerView(int headerPosition, View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            HeaderFillerView headerView = new HeaderFillerView(context);
-            headerView.forceWidth(gridView.getWidth());
-            convertView = headerView;
-        }
-        return convertView;
+        HeaderFillerView headerFillerView = (HeaderFillerView) convertView;
+            headerFillerView = new HeaderFillerView(context);
+            headerFillerView.setHeaderWidth(gridView.getWidth());
+        
+        return headerFillerView;
     }
 
     protected class HeaderHolder {
@@ -198,7 +198,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
             // Skip past fake items making space for header in front of
             // sections.
-            if (place == 0) {
+            if (place >= 0 && place < numColumns) {
                 // Position is first column where header will be.
                 return new Position(POSITION_HEADER, i);
             }
@@ -219,7 +219,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
             place -= sectionCount + filler;
         }
 
-        // Position is a fake (or beyond end of data set) so return null.
+        // Position is a fake.
         return new Position(POSITION_FAKE, i);
     }
 

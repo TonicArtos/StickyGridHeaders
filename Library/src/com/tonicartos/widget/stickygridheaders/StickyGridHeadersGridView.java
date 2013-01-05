@@ -18,7 +18,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
-public class StickyGridHeadersGridView extends GridView implements OnScrollListener, android.widget.AdapterView.OnItemClickListener, android.widget.AdapterView.OnItemSelectedListener, android.widget.AdapterView.OnItemLongClickListener {
+public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
 
     private StickyGridHeadersAdapterWrapper adapter;
     private boolean areHeadersSticky = true;
@@ -147,12 +147,13 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         List<Integer> vis = new ArrayList<Integer>();
         int vi = 0;
-        for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition(); i++) {
+        for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition();) {
             long id = getItemIdAtPosition(i);
             if (id == -2) {
                 vis.add(vi);
             }
-            vi++;
+            i += numColumns;
+            vi += numColumns;
         }
 
         for (int i = 0; i < vis.size(); i++) {
@@ -196,7 +197,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         // header.draw(canvas);
         // canvas.restore();
     }
-
+    
     public void requestDraw(View headerView) {
         headerRequests.add(headerView);
     }
