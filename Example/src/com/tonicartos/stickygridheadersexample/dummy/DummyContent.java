@@ -23,7 +23,7 @@ public class DummyContent {
     static {
         // Add sample items.
         addHeader("1", new ArrayStickyGridHeaderData("Section 1", 3));
-        addItem(new DummyItem("1", "Item 1"));
+        addItem(new DummyItem("1", "Item 1 - la la la la la la la la la la la la la la la la la la la la la la la la"));
         addItem(new DummyItem("2", "Item 2"));
         addItem(new DummyItem("3", "Item 3"));
         addHeader("2", new ArrayStickyGridHeaderData("Section 2 - A long header view with much to say indeed! la la la la la la la la la la la la la la la la la la la la la la la la", 4));
@@ -36,9 +36,9 @@ public class DummyContent {
         addItem(new DummyItem("9", "Item 9"));
         addItem(new DummyItem("10", "Item 10"));
         addItem(new DummyItem("11", "Item 11"));
-        addItem(new DummyItem("12", "Item 12"));
+        addItem(new DummyItem("12", "Item 12 - la la la la la la la la la la la la la la la la la la la la la la la la"));
         addItem(new DummyItem("13", "Item 13"));
-        addItem(new DummyItem("14", "Item 14"));
+        addItem(new DummyItem("14", "Item 14 - la la la la"));
         addItem(new DummyItem("15", "Item 15"));
         addHeader("2", new ArrayStickyGridHeaderData("Section 4", 2));
         addItem(new DummyItem("16", "Item 16"));
