@@ -1,3 +1,19 @@
+/*
+ Copyright 2013 Tonic Artos
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.tonicartos.widget.stickygridheaders;
 
 import java.util.ArrayList;
@@ -9,7 +25,6 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -20,6 +35,12 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
+/**
+ * GridView that displays items in sections with headers that stick to the top
+ * of the view.
+ * 
+ * @author Tonic Artos
+ */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
 
     private StickyGridHeadersAdapterWrapper adapter;
@@ -68,33 +89,33 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-    	if(scrollListener!=null){
-			scrollListener.onScroll(view,firstVisibleItem,visibleItemCount,totalItemCount);
-		}
-    	
-    	if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO){
-			scrollChanged(firstVisibleItem);
-		}
+        if (scrollListener != null) {
+            scrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
+        }
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+            scrollChanged(firstVisibleItem);
+        }
     }
 
     private void scrollChanged(int firstVisibleItem) {
-    	if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky) { 
-    		return;
-    	}
-    	
-    	View firstItem = (View)getItemAtPosition(firstVisibleItem);
-    	if(header == null) {
-    		header = (View) firstItem.getTag();
-    	} else {
-    		View headerItem = (View) firstItem.getTag();
-    		if(headerItem.equals(header) ) {
-    			header = headerItem;
-    		}
-    	}
-    	
-	}
+        if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky) {
+            return;
+        }
 
-	@Override
+        View firstItem = (View) getItemAtPosition(firstVisibleItem);
+        if (header == null) {
+            header = (View) firstItem.getTag();
+        } else {
+            View headerItem = (View) firstItem.getTag();
+            if (headerItem.equals(header)) {
+                header = headerItem;
+            }
+        }
+
+    }
+
+    @Override
     public void onScrollStateChanged(AbsListView view, int scrollState) {
         if (scrollListener != null) {
             scrollListener.onScrollStateChanged(view, scrollState);
@@ -102,7 +123,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     }
 
-    
     @Override
     public void setOnItemClickListener(android.widget.AdapterView.OnItemClickListener listener) {
         this.onItemClickListener = listener;

@@ -1,3 +1,19 @@
+/*
+ Copyright 2013 Tonic Artos
+
+ Licensed under the Apache License, Version 2.0 (the "License");
+ you may not use this file except in compliance with the License.
+ You may obtain a copy of the License at
+
+ http://www.apache.org/licenses/LICENSE-2.0
+
+ Unless required by applicable law or agreed to in writing, software
+ distributed under the License is distributed on an "AS IS" BASIS,
+ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ See the License for the specific language governing permissions and
+ limitations under the License.
+ */
+
 package com.tonicartos.widget.stickygridheaders;
 
 import android.annotation.SuppressLint;
@@ -7,12 +23,15 @@ import android.view.View;
 import android.widget.FrameLayout;
 
 /**
- * This class makes sure that all items in a GridView row are of the same
- * height. (Could extend FrameLayout, LinearLayout etc as well, RelativeLayout
- * was just my choice here)
+ * View to wrap adapter supplied views and ensure the row height is correctly
+ * measured for the contents of all cells in the row.
+ * <p>
+ * Some mickymousing is required with the adapter wrapper.
+ * <p>
+ * Adopted and modified from code first detailed at <a
+ * href="http://stackoverflow.com/a/13994344">http://stackoverflow.com/a/13994344</a>
  * 
- * @author Anton Spaans
- * 
+ * @author Anton Spaans, Tonic Artos
  */
 public class ReferenceView extends FrameLayout {
     private int numColumns;
