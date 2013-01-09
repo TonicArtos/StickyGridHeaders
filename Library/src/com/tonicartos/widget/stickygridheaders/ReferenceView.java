@@ -3,7 +3,6 @@ package com.tonicartos.widget.stickygridheaders;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -76,7 +75,6 @@ public class ReferenceView extends FrameLayout {
         }
 
         if (rowSiblings == null) {
-            Log.d("asdf", position + " " + getMeasuredHeight());
             return;
         }
 
@@ -84,13 +82,11 @@ public class ReferenceView extends FrameLayout {
         int maxHeight = measuredHeight;
         for (View rowSibling : rowSiblings) {
             if (rowSibling != null) {
-                Log.d("asdf", ((ReferenceView) rowSibling).position + "measure");
                 maxHeight = Math.max(maxHeight, rowSibling.getMeasuredHeight());
             }
         }
 
         if (maxHeight == measuredHeight) {
-            Log.d("asdf", position + " " + getMeasuredHeight());
             return;
         }
 
@@ -111,7 +107,6 @@ public class ReferenceView extends FrameLayout {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             break;
         }
-        Log.d("asdf", position + " " + getMeasuredHeight());
     }
 
     /**

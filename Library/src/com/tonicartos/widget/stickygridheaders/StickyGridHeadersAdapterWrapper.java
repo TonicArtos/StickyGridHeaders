@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -40,6 +39,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
     private int numColumns;
     private View[] rowSiblings;
+    static private boolean prepopulation;
 
     public StickyGridHeadersAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersAdapter delegate, int numColumns) {
         this.context = context;
@@ -150,15 +150,16 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
         rowSiblings[position % numColumns] = container;
         if (position % numColumns == 0) {
+            prepopulation = true;
             for (int i = 1; i < rowSiblings.length; i++) {
-                rowSiblings[i] = getView(position + 1, null, parent);
+                rowSiblings[i] = getView(position + i, null, parent);
             }
+            prepopulation = false;
         }
 
         container.setRowSiblings(rowSiblings);
-        if (position % numColumns == (numColumns - 1) || position == getCount() - 1) {
+        if (!prepopulation && (position % numColumns == (numColumns - 1) || position == getCount() - 1)) {
             // End of row or items.
-            Log.d("asdf", "rs " + position);
             initRowSiblings(numColumns);
         }
         return container;

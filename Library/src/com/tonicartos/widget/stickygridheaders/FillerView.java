@@ -1,8 +1,6 @@
 package com.tonicartos.widget.stickygridheaders;
 
 import android.content.Context;
-import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 
