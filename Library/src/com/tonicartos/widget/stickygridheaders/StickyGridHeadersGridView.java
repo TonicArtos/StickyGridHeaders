@@ -8,6 +8,7 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -197,7 +198,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         // header.draw(canvas);
         // canvas.restore();
     }
-    
+
     public void requestDraw(View headerView) {
         headerRequests.add(headerView);
     }

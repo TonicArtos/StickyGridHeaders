@@ -1,7 +1,8 @@
 package com.tonicartos.widget.stickygridheaders;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -17,14 +18,12 @@ public class HeaderFillerView extends FrameLayout {
         super(context, attrs);
     }
 
-    @SuppressLint("NewApi")
     public HeaderFillerView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
 
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        // super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         View v = (View) getTag();
         if (v.getMeasuredHeight() == 0) {
             v.measure(MeasureSpec.makeMeasureSpec(headerWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));

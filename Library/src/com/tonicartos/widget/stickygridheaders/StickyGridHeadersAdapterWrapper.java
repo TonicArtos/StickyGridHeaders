@@ -1,11 +1,12 @@
 package com.tonicartos.widget.stickygridheaders;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.view.LayoutInflater;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -33,20 +34,20 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
             headerCache.clear();
         }
     };
+    private StickyGridHeadersGridView gridView;
+
     private final List<View> headerCache = new ArrayList<View>();
 
-    private LayoutInflater inflater;
-
     private int numColumns;
-    private StickyGridHeadersGridView gridView;
+    private View[] rowSiblings;
 
     public StickyGridHeadersAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersAdapter delegate, int numColumns) {
         this.context = context;
         this.delegate = delegate;
         this.numColumns = numColumns;
         this.gridView = gridView;
+        initRowSiblings(numColumns);
         delegate.registerDataSetObserver(dataSetObserver);
-        inflater = LayoutInflater.from(context);
     }
 
     @Override
@@ -115,6 +116,13 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
+        ReferenceView container = null;
+        if (convertView instanceof ReferenceView) {
+            // Unpack from reference view;
+            container = (ReferenceView) convertView;
+            convertView = container.getChildAt(0);
+        }
+
         Position adapterPosition = translatePosition(position);
         if (adapterPosition.position == POSITION_HEADER) {
             View v = getHeaderFillerView(adapterPosition.header, convertView, parent);
@@ -123,12 +131,42 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
             View header = delegate.getHeaderView(adapterPosition.header, convertView, parent);
             v.setTag(header);
             gridView.requestDraw(header);
-            return v;
+            convertView = v;
+        } else if (adapterPosition.position == POSITION_FAKE) {
+            convertView = getFillerView(convertView, parent);
+        } else {
+            convertView = delegate.getView(adapterPosition.position, convertView, parent);
         }
-        if (adapterPosition.position == POSITION_FAKE) {
-            return getFillerView(convertView, parent);
+
+        // Wrap in reference view if not already.
+        if (container == null) {
+            container = new ReferenceView(context);
         }
-        return delegate.getView(adapterPosition.position, convertView, parent);
+        container.removeAllViews();
+        container.addView(convertView);
+
+        container.setPosition(position);
+        container.setNumColumns(numColumns);
+
+        rowSiblings[position % numColumns] = container;
+        if (position % numColumns == 0) {
+            for (int i = 1; i < rowSiblings.length; i++) {
+                rowSiblings[i] = getView(position + 1, null, parent);
+            }
+        }
+
+        container.setRowSiblings(rowSiblings);
+        if (position % numColumns == (numColumns - 1) || position == getCount() - 1) {
+            // End of row or items.
+            Log.d("asdf", "rs " + position);
+            initRowSiblings(numColumns);
+        }
+        return container;
+    }
+
+    private void initRowSiblings(int numColumns) {
+        rowSiblings = new View[numColumns];
+        Arrays.fill(rowSiblings, null);
     }
 
     @Override
@@ -163,6 +201,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
     public void setNumColumns(int numColumns) {
         this.numColumns = numColumns;
+        initRowSiblings(numColumns);
     }
 
     @Override
@@ -170,23 +209,34 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
         delegate.unregisterDataSetObserver(observer);
     }
 
-    private View getFillerView(View convertView, ViewGroup parent) {
-        if (convertView == null) {
-            convertView = inflater.inflate(android.R.layout.simple_list_item_1, parent, false);
+    private FillerView getFillerView(View convertView, ViewGroup parent) {
+        FillerView fillerView = (FillerView) convertView;
+        if (fillerView == null) {
+            fillerView = new FillerView(context);
         }
-        return convertView;
+
+        return fillerView;
     }
 
     private View getHeaderFillerView(int headerPosition, View convertView, ViewGroup parent) {
         HeaderFillerView headerFillerView = (HeaderFillerView) convertView;
-            headerFillerView = new HeaderFillerView(context);
-            headerFillerView.setHeaderWidth(gridView.getWidth());
-        
+        headerFillerView = new HeaderFillerView(context);
+        headerFillerView.setHeaderWidth(gridView.getWidth());
+
         return headerFillerView;
     }
 
-    protected class HeaderHolder {
-        protected View headerView;
+    /**
+     * Counts the number of items that would be need to fill out the last row in
+     * the group of items with the given header.
+     * 
+     * @param header
+     *            Header set of items are grouped by.
+     * @return The count of unfilled spaces in the last row.
+     */
+    private int unFilledSpacesInHeaderGroup(int header) {
+        int remainder = delegate.getCountForHeader(header) % numColumns;
+        return remainder == 0 ? 0 : numColumns - remainder;
     }
 
     protected Position translatePosition(int position) {
@@ -198,7 +248,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
 
             // Skip past fake items making space for header in front of
             // sections.
-            if (place >= 0 && place < numColumns) {
+            if (place == 0) {
                 // Position is first column where header will be.
                 return new Position(POSITION_HEADER, i);
             }
@@ -223,33 +273,24 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
         return new Position(POSITION_FAKE, i);
     }
 
-    protected class Position {
-        protected int position;
-        protected int header;
-
-        protected Position(int position, int header) {
-            this.position = position;
-            this.header = header;
-        }
-    }
-
-    /**
-     * Counts the number of items that would be need to fill out the last row in
-     * the group of items with the given header.
-     * 
-     * @param header
-     *            Header set of items are grouped by.
-     * @return The count of unfilled spaces in the last row.
-     */
-    private int unFilledSpacesInHeaderGroup(int header) {
-        int remainder = delegate.getCountForHeader(header) % numColumns;
-        return remainder == 0 ? 0 : numColumns - remainder;
-    }
-
     protected void updateCount() {
         count = 0;
         for (int i = 0; i < delegate.getNumHeaders(); i++) {
             count += delegate.getCountForHeader(i) + numColumns;
+        }
+    }
+
+    protected class HeaderHolder {
+        protected View headerView;
+    }
+
+    protected class Position {
+        protected int header;
+        protected int position;
+
+        protected Position(int position, int header) {
+            this.position = position;
+            this.header = header;
         }
     }
 }
