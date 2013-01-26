@@ -17,10 +17,13 @@
 package com.tonicartos.widget.stickygridheaders;
 
 import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
 import android.content.Context;
+import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 
 /**
  * View to wrap adapter supplied views and ensure the row height is correctly
@@ -47,6 +50,7 @@ public class ReferenceView extends FrameLayout {
         super(context, attrs);
     }
 
+    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public ReferenceView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
     }
@@ -84,7 +88,11 @@ public class ReferenceView extends FrameLayout {
     public void setTag(int key, Object tag) {
         getChildAt(0).setTag(key, tag);
     }
-
+    
+    public View getView() {
+        return getChildAt(0);
+    }
+    
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -109,23 +117,8 @@ public class ReferenceView extends FrameLayout {
             return;
         }
 
-        int heightMode = MeasureSpec.getMode(heightMeasureSpec);
-        int heightSize = MeasureSpec.getSize(heightMeasureSpec);
-        switch (heightMode) {
-        case MeasureSpec.AT_MOST:
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(Math.min(maxHeight, heightSize), MeasureSpec.EXACTLY);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            break;
-
-        case MeasureSpec.EXACTLY:
-            // No debate here. Final measuring already took place. That's it.
-            break;
-
-        case MeasureSpec.UNSPECIFIED:
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-            break;
-        }
+        heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY);
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     /**

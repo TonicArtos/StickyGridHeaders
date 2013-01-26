@@ -25,7 +25,10 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.View;
+import android.view.ViewGroup;
+import android.view.View.MeasureSpec;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -42,7 +45,6 @@ import android.widget.ListAdapter;
  * @author Tonic Artos
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
-
     private StickyGridHeadersAdapterWrapper adapter;
     private boolean areHeadersSticky = true;
     private final Rect clippingRect = new Rect();
@@ -59,31 +61,28 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             reset();
         }
     };
-    private View header;
+    private View stickiedHeader;
     private int headerBottomPosition;
-    private boolean headerHasChanged = true;
-    private int headerHeight = -1;
     private int numColumns;
 
-    private Long oldHeaderId = null;
-
     private OnScrollListener scrollListener;
-    private List<View> headerRequests = new ArrayList<View>();
     private OnItemClickListener onItemClickListener;
     private OnItemLongClickListener onItemLongClickListener;
     private OnItemSelectedListener onItemSelectedListener;
+    private long currentHeaderId = -1;
 
     public StickyGridHeadersGridView(Context context) {
-        super(context);
+        this(context, null);
     }
 
     public StickyGridHeadersGridView(Context context, AttributeSet attrs) {
-        super(context, attrs, android.R.attr.gridViewStyle);
+        this(context, attrs, android.R.attr.gridViewStyle);
     }
 
     public StickyGridHeadersGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         super.setOnScrollListener(this);
+        Log.d("asdf", "asdf22");
         setVerticalFadingEdgeEnabled(false);
     }
 
@@ -98,21 +97,96 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
     }
 
+    private void measureHeader() {
+        int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
+        int heightMeasureSpec = 0;
+
+        ViewGroup.LayoutParams params = stickiedHeader.getLayoutParams();
+        if (params != null && params.height > 0) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(params.height, MeasureSpec.EXACTLY);
+        } else {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+        }
+        stickiedHeader.measure(widthMeasureSpec, heightMeasureSpec);
+        stickiedHeader.layout(getLeft() + getPaddingLeft(), 0, getRight() - getPaddingRight(), stickiedHeader.getMeasuredHeight());
+    }
+
     private void scrollChanged(int firstVisibleItem) {
         if (adapter == null || adapter.getCount() == 0 || !areHeadersSticky) {
             return;
         }
 
-        View firstItem = (View) getItemAtPosition(firstVisibleItem);
-        if (header == null) {
-            header = (View) firstItem.getTag();
-        } else {
-            View headerItem = (View) firstItem.getTag();
-            if (headerItem.equals(header)) {
-                header = headerItem;
+        ReferenceView firstItem = (ReferenceView) getChildAt(0);
+        if (firstItem == null) {
+            return;
+        }
+        // if (firstItem.getView() instanceof HeaderFillerView) {
+        // stickiedHeader = (View) firstItem.getTag();
+        // }
+
+        long newHeaderId = adapter.getHeaderId(firstVisibleItem);
+        if (currentHeaderId != newHeaderId) {
+            stickiedHeader = adapter.getHeaderView(firstVisibleItem, stickiedHeader, this);
+            measureHeader();
+        }
+        currentHeaderId = newHeaderId;
+
+        final int childCount = getChildCount();
+        if (childCount != 0) {
+            View viewToWatch = null;
+            int watchingChildDistance = 99999;
+
+            // Find the next header after the stickied one.
+            for (int i = 0; i < childCount; i += numColumns) {
+                ReferenceView child = (ReferenceView) super.getChildAt(i);
+
+                int childDistance;
+                if (clippingToPadding) {
+                    childDistance = child.getTop() - getPaddingTop();
+                } else {
+                    childDistance = child.getTop();
+                }
+
+                if (childDistance < 0) {
+                    continue;
+                }
+
+                if (child.getView() instanceof HeaderFillerView && childDistance < watchingChildDistance) {
+                    viewToWatch = child;
+                    watchingChildDistance = childDistance;
+                }
+            }
+
+            int headerHeight = getHeaderHeight();
+
+            // Work out where to draw stickied header using synchronised
+            // scrolling.
+            if (viewToWatch != null) {
+                if (firstVisibleItem == 0 && super.getChildAt(0).getTop() > 0 && !clippingToPadding) {
+                    headerBottomPosition = 0;
+                } else {
+                    if (clippingToPadding) {
+                        headerBottomPosition = Math.min(viewToWatch.getTop(), headerHeight + getPaddingTop());
+                        headerBottomPosition = headerBottomPosition < getPaddingTop() ? headerHeight + getPaddingTop() : headerBottomPosition;
+                    } else {
+                        headerBottomPosition = Math.min(viewToWatch.getTop(), headerHeight);
+                        headerBottomPosition = headerBottomPosition < 0 ? headerHeight : headerBottomPosition;
+                    }
+                }
+            } else {
+                headerBottomPosition = headerHeight;
+                if (clippingToPadding) {
+                    headerBottomPosition += getPaddingTop();
+                }
             }
         }
+    }
 
+    private int getHeaderHeight() {
+        if (stickiedHeader != null) {
+            return stickiedHeader.getMeasuredHeight();
+        }
+        return 0;
     }
 
     @Override
@@ -176,34 +250,50 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private void reset() {
         headerBottomPosition = 0;
-        headerHeight = -1;
-        header = null;
-        oldHeaderId = null;
-        headerHasChanged = true;
+        stickiedHeader = null;
     }
 
     @Override
     protected void dispatchDraw(Canvas canvas) {
-        // HeaderView headerFrame;
-        // for (int i = 0; i < headerRequests.size(); i++) {
-        // headerFrame = headerRequests.get(i);
-        // headerFrame.forceWidth(getWidth());
-        // }
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
+            scrollChanged(getFirstVisiblePosition());
+        }
+
+        // Mask the region where we will draw the header later...
+        int headerHeight = getHeaderHeight();
+        int top = headerBottomPosition - headerHeight;
+        
+        clippingRect.left = getPaddingLeft();
+        clippingRect.right = getWidth() - getPaddingRight();
+        if (clippingToPadding) {
+            clippingRect.top = getPaddingTop() + headerBottomPosition;
+            clippingRect.bottom = getHeight() - getPaddingBottom();
+        } else {
+            clippingRect.top = headerBottomPosition;
+            clippingRect.bottom = getHeight();
+        }
+
+        canvas.save();
+        canvas.clipRect(clippingRect);
+
+        // ...and draw the grid view.
         super.dispatchDraw(canvas);
 
-        List<Integer> vis = new ArrayList<Integer>();
+        // Find headers.
+        List<Integer> headerPositions = new ArrayList<Integer>();
         int vi = 0;
         for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition();) {
             long id = getItemIdAtPosition(i);
-            if (id == -2) {
-                vis.add(vi);
+            if (id == StickyGridHeadersAdapterWrapper.ID_HEADER) {
+                headerPositions.add(vi);
             }
             i += numColumns;
             vi += numColumns;
         }
 
-        for (int i = 0; i < vis.size(); i++) {
-            View frame = getChildAt(vis.get(i));
+        // Draw headers in list.
+        for (int i = 0; i < headerPositions.size(); i++) {
+            View frame = getChildAt(headerPositions.get(i));
             View header = (View) frame.getTag();
 
             int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
@@ -221,31 +311,27 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             header.draw(canvas);
             canvas.restore();
         }
-        //
-        // View header;
-        // for (int i = 0; i < headerRequests.size(); i++) {
-        // headerFrame = headerRequests.get(i);
-        // header = headerFrame.getChildAt(0);
-        // int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
-        // MeasureSpec.EXACTLY);
-        // int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0,
-        // MeasureSpec.UNSPECIFIED);
-        // header.measure(widthMeasureSpec, heightMeasureSpec);
-        // clippingRect.left = getPaddingLeft();
-        // clippingRect.right = getWidth() - getPaddingRight();
-        // clippingRect.bottom = headerFrame.getBottom();
-        // clippingRect.top = headerFrame.getTop();
-        // }
-        //
-        // canvas.save();
-        // canvas.clipRect(clippingRect);
-        // canvas.translate(getPaddingLeft(), top);
-        // header.draw(canvas);
-        // canvas.restore();
-    }
+        canvas.restore();
 
-    public void requestDraw(View headerView) {
-        headerRequests.add(headerView);
+        if (stickiedHeader == null || !areHeadersSticky) {
+            return;
+        }
+
+        // Draw stickied header.
+        clippingRect.left = getPaddingLeft();
+        clippingRect.right = getWidth() - getPaddingRight();
+        clippingRect.bottom = top + headerHeight;
+        if (clippingToPadding) {
+            clippingRect.top = getPaddingTop();
+        } else {
+            clippingRect.top = 0;
+        }
+
+        canvas.save();
+        canvas.clipRect(clippingRect);
+        canvas.translate(getPaddingLeft(), top);
+        stickiedHeader.draw(canvas);
+        canvas.restore();
     }
 
     @Override
