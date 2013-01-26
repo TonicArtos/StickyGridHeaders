@@ -132,7 +132,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         gridView = (GridView) view.findViewById(R.id.asset_grid);
         gridView.setOnItemClickListener(this);
         gridView.setNumColumns(3);
-        gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, android.R.layout.simple_list_item_1, android.R.layout.simple_list_item_1));
+        gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, R.layout.header, R.layout.item));
 
         if (savedInstanceState != null) {
             firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
