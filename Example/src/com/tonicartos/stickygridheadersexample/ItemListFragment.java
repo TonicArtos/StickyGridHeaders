@@ -16,11 +16,6 @@
 
 package com.tonicartos.stickygridheadersexample;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent.DummyItem;
-import com.tonicartos.widget.stickygridheaders.ArrayStickyGridHeadersAdapter;
-
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
@@ -29,10 +24,15 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.ListView;
+
+import com.actionbarsherlock.app.SherlockFragment;
+import com.tonicartos.stickygridheadersexample.dummy.DummyContent;
+import com.tonicartos.stickygridheadersexample.dummy.DummyContent.DummyItem;
+import com.tonicartos.widget.stickygridheaders.ArrayStickyGridHeadersAdapter;
 
 /**
  * A list fragment representing a list of Items. This fragment also supports

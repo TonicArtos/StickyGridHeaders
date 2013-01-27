@@ -25,10 +25,8 @@ import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.MeasureSpec;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -82,7 +80,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     public StickyGridHeadersGridView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
         super.setOnScrollListener(this);
-        Log.d("asdf", "asdf22");
         setVerticalFadingEdgeEnabled(false);
     }
 
@@ -262,7 +259,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         // Mask the region where we will draw the header later...
         int headerHeight = getHeaderHeight();
         int top = headerBottomPosition - headerHeight;
-        
+
         clippingRect.left = getPaddingLeft();
         clippingRect.right = getWidth() - getPaddingRight();
         if (clippingToPadding) {

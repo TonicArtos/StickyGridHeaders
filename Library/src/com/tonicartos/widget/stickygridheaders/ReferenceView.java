@@ -23,7 +23,6 @@ import android.os.Build;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.FrameLayout;
-import android.widget.LinearLayout;
 
 /**
  * View to wrap adapter supplied views and ensure the row height is correctly
@@ -88,11 +87,11 @@ public class ReferenceView extends FrameLayout {
     public void setTag(int key, Object tag) {
         getChildAt(0).setTag(key, tag);
     }
-    
+
     public View getView() {
         return getChildAt(0);
     }
-    
+
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
