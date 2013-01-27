@@ -36,8 +36,8 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     private static final int NUM_VIEW_TYPES = 2;
     protected static final int POSITION_FAKE = -0x01;
     protected static final int POSITION_HEADER = -0x02;
-    protected static final int ID_FAKE = -0x01;
-    protected static final int ID_HEADER = -0x02;
+    protected static final int ID_FAKE = 0x00;
+    protected static final int ID_HEADER = 0x01;
     protected static final int VIEW_TYPE_FILLER = 0x00;
     protected static final int VIEW_TYPE_HEADER = 0x01;
 
