@@ -285,13 +285,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         mClippingRect.left = getPaddingLeft();
         mClippingRect.right = getWidth() - getPaddingRight();
-        if (mClippingToPadding) {
-            mClippingRect.top = getPaddingTop() + mHeaderBottomPosition;
-            mClippingRect.bottom = getHeight() - getPaddingBottom();
-        } else {
-            mClippingRect.top = mHeaderBottomPosition;
-            mClippingRect.bottom = getHeight();
-        }
+        mClippingRect.top = mHeaderBottomPosition;
+        mClippingRect.bottom = getHeight();
 
         canvas.save();
         canvas.clipRect(mClippingRect);
