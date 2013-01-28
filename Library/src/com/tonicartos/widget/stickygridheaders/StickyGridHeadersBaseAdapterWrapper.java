@@ -47,11 +47,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     protected static final int VIEW_TYPE_FILLER = 0x00;
     protected static final int VIEW_TYPE_HEADER = 0x01;
 
-    public final StickyGridHeadersBaseAdapter delegate;
+    public final StickyGridHeadersBaseAdapter mDelegate;
 
-    private final Context context;
-    private int count;
-    private DataSetObserver dataSetObserver = new DataSetObserver() {
+    private final Context mContext;
+    private int mCount;
+    private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
             updateCount();
@@ -59,23 +59,23 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
         @Override
         public void onInvalidated() {
-            headerCache.clear();
+            mHeaderCache.clear();
         }
     };
 
-    private StickyGridHeadersGridView gridView;
+    private StickyGridHeadersGridView mDridView;
 
-    private final List<View> headerCache = new ArrayList<View>();
-    private int numColumns;
-    private View[] rowSiblings;
+    private final List<View> mHeaderCache = new ArrayList<View>();
+    private int mNumColumns;
+    private View[] mRowSiblings;
 
     public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersBaseAdapter delegate, int numColumns) {
-        this.context = context;
-        this.delegate = delegate;
-        this.numColumns = numColumns;
-        this.gridView = gridView;
+        mContext = context;
+        mDelegate = delegate;
+        mNumColumns = numColumns;
+        mDridView = gridView;
         initRowSiblings(numColumns);
-        delegate.registerDataSetObserver(dataSetObserver);
+        delegate.registerDataSetObserver(mDataSetObserver);
     }
 
     @Override
@@ -85,13 +85,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public int getCount() {
-        count = 0;
-        for (int i = 0; i < delegate.getNumHeaders(); i++) {
+        mCount = 0;
+        for (int i = 0; i < mDelegate.getNumHeaders(); i++) {
             // Pad count with space for header and trailing filler in header
             // group.
-            count += delegate.getCountForHeader(i) + unFilledSpacesInHeaderGroup(i) + numColumns;
+            mCount += mDelegate.getCountForHeader(i) + unFilledSpacesInHeaderGroup(i) + mNumColumns;
         }
-        return count;
+        return mCount;
     }
 
     /**
@@ -110,36 +110,36 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     @Override
     public Object getItem(int position) throws ArrayIndexOutOfBoundsException {
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.position == POSITION_FAKE || adapterPosition.position == POSITION_HEADER) {
+        if (adapterPosition.mPosition == POSITION_FAKE || adapterPosition.mPosition == POSITION_HEADER) {
             // Fake entry in view.
             return null;
         }
 
-        return delegate.getItem(adapterPosition.position);
+        return mDelegate.getItem(adapterPosition.mPosition);
     }
 
     @Override
     public long getItemId(int position) {
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.position == POSITION_HEADER) {
+        if (adapterPosition.mPosition == POSITION_HEADER) {
             return ID_HEADER;
         }
-        if (adapterPosition.position == POSITION_FAKE) {
+        if (adapterPosition.mPosition == POSITION_FAKE) {
             return ID_FAKE;
         }
-        return delegate.getItemId(adapterPosition.position);
+        return mDelegate.getItemId(adapterPosition.mPosition);
     }
 
     @Override
     public int getItemViewType(int position) {
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.position == POSITION_HEADER) {
+        if (adapterPosition.mPosition == POSITION_HEADER) {
             return VIEW_TYPE_HEADER;
         }
-        if (adapterPosition.position == POSITION_FAKE) {
+        if (adapterPosition.mPosition == POSITION_FAKE) {
             return VIEW_TYPE_FILLER;
         }
-        return delegate.getItemViewType(adapterPosition.position) + sNumViewTypes;
+        return mDelegate.getItemViewType(adapterPosition.mPosition) + sNumViewTypes;
     }
 
     @Override
@@ -152,90 +152,90 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
 
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.position == POSITION_HEADER) {
-            View v = getHeaderFillerView(adapterPosition.header, convertView, parent);
+        if (adapterPosition.mPosition == POSITION_HEADER) {
+            View v = getHeaderFillerView(adapterPosition.mHeader, convertView, parent);
             ((HeaderFillerView) v).setId(position);
             convertView = (View) v.getTag();
-            View header = delegate.getHeaderView(adapterPosition.header, convertView, parent);
+            View header = mDelegate.getHeaderView(adapterPosition.mHeader, convertView, parent);
             v.setTag(header);
             convertView = v;
-        } else if (adapterPosition.position == POSITION_FAKE) {
+        } else if (adapterPosition.mPosition == POSITION_FAKE) {
             convertView = getFillerView(convertView, parent);
         } else {
-            convertView = delegate.getView(adapterPosition.position, convertView, parent);
+            convertView = mDelegate.getView(adapterPosition.mPosition, convertView, parent);
         }
 
         // Wrap in reference view if not already.
         if (container == null) {
-            container = new ReferenceView(context);
+            container = new ReferenceView(mContext);
         }
         container.removeAllViews();
         container.addView(convertView);
 
         container.setPosition(position);
-        container.setNumColumns(numColumns);
+        container.setNumColumns(mNumColumns);
 
-        rowSiblings[position % numColumns] = container;
-        if (position % numColumns == 0) {
+        mRowSiblings[position % mNumColumns] = container;
+        if (position % mNumColumns == 0) {
             sCurrentlySizingRow = true;
-            for (int i = 1; i < rowSiblings.length; i++) {
-                rowSiblings[i] = getView(position + i, null, parent);
+            for (int i = 1; i < mRowSiblings.length; i++) {
+                mRowSiblings[i] = getView(position + i, null, parent);
             }
             sCurrentlySizingRow = false;
         }
 
-        container.setRowSiblings(rowSiblings);
-        if (!sCurrentlySizingRow && (position % numColumns == (numColumns - 1) || position == getCount() - 1)) {
+        container.setRowSiblings(mRowSiblings);
+        if (!sCurrentlySizingRow && (position % mNumColumns == (mNumColumns - 1) || position == getCount() - 1)) {
             // End of row or items.
-            initRowSiblings(numColumns);
+            initRowSiblings(mNumColumns);
         }
         return container;
     }
 
     @Override
     public int getViewTypeCount() {
-        return delegate.getViewTypeCount() + sNumViewTypes;
+        return mDelegate.getViewTypeCount() + sNumViewTypes;
     }
 
     @Override
     public boolean hasStableIds() {
-        return delegate.hasStableIds();
+        return mDelegate.hasStableIds();
     }
 
     @Override
     public boolean isEmpty() {
-        return delegate.isEmpty();
+        return mDelegate.isEmpty();
     }
 
     @Override
     public boolean isEnabled(int position) {
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.position == POSITION_FAKE || adapterPosition.position == POSITION_HEADER) {
+        if (adapterPosition.mPosition == POSITION_FAKE || adapterPosition.mPosition == POSITION_HEADER) {
             return false;
         }
 
-        return delegate.isEnabled(adapterPosition.position);
+        return mDelegate.isEnabled(adapterPosition.mPosition);
     }
 
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
-        delegate.registerDataSetObserver(observer);
+        mDelegate.registerDataSetObserver(observer);
     }
 
     public void setNumColumns(int numColumns) {
-        this.numColumns = numColumns;
+        mNumColumns = numColumns;
         initRowSiblings(numColumns);
     }
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
-        delegate.unregisterDataSetObserver(observer);
+        mDelegate.unregisterDataSetObserver(observer);
     }
 
     private FillerView getFillerView(View convertView, ViewGroup parent) {
         FillerView fillerView = (FillerView) convertView;
         if (fillerView == null) {
-            fillerView = new FillerView(context);
+            fillerView = new FillerView(mContext);
         }
 
         return fillerView;
@@ -243,15 +243,15 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     private View getHeaderFillerView(int headerPosition, View convertView, ViewGroup parent) {
         HeaderFillerView headerFillerView = (HeaderFillerView) convertView;
-        headerFillerView = new HeaderFillerView(context);
-        headerFillerView.setHeaderWidth(gridView.getWidth());
+        headerFillerView = new HeaderFillerView(mContext);
+        headerFillerView.setHeaderWidth(mDridView.getWidth());
 
         return headerFillerView;
     }
 
     private void initRowSiblings(int numColumns) {
-        rowSiblings = new View[numColumns];
-        Arrays.fill(rowSiblings, null);
+        mRowSiblings = new View[numColumns];
+        Arrays.fill(mRowSiblings, null);
     }
 
     /**
@@ -263,16 +263,16 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @return The count of unfilled spaces in the last row.
      */
     private int unFilledSpacesInHeaderGroup(int header) {
-        int remainder = delegate.getCountForHeader(header) % numColumns;
-        return remainder == 0 ? 0 : numColumns - remainder;
+        int remainder = mDelegate.getCountForHeader(header) % mNumColumns;
+        return remainder == 0 ? 0 : mNumColumns - remainder;
     }
 
     protected long getHeaderId(int position) {
-        return translatePosition(position).header;
+        return translatePosition(position).mHeader;
     }
 
     protected View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return delegate.getHeaderView(translatePosition(position).header, convertView, parent);
+        return mDelegate.getHeaderView(translatePosition(position).mHeader, convertView, parent);
     }
 
     protected Position translatePosition(int position) {
@@ -280,8 +280,8 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         int adapterPosition = position;
         int place = position;
         int i;
-        for (i = 0; i < delegate.getNumHeaders(); i++) {
-            int sectionCount = delegate.getCountForHeader(i);
+        for (i = 0; i < mDelegate.getNumHeaders(); i++) {
+            int sectionCount = mDelegate.getCountForHeader(i);
 
             // Skip past fake items making space for header in front of
             // sections.
@@ -289,12 +289,12 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
                 // Position is first column where header will be.
                 return new Position(POSITION_HEADER, i);
             }
-            place -= numColumns;
+            place -= mNumColumns;
             if (place < 0) {
                 // Position is a fake so return null.
                 return new Position(POSITION_FAKE, i);
             }
-            adapterPosition -= numColumns;
+            adapterPosition -= mNumColumns;
 
             if (place < sectionCount) {
                 return new Position(adapterPosition, i);
@@ -311,9 +311,9 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     }
 
     protected void updateCount() {
-        count = 0;
-        for (int i = 0; i < delegate.getNumHeaders(); i++) {
-            count += delegate.getCountForHeader(i) + numColumns;
+        mCount = 0;
+        for (int i = 0; i < mDelegate.getNumHeaders(); i++) {
+            mCount += mDelegate.getCountForHeader(i) + mNumColumns;
         }
     }
 
@@ -343,7 +343,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @author Tonic Artos
      */
     protected class HeaderFillerView extends FrameLayout {
-        private int headerWidth;
+        private int mHeaderWidth;
 
         public HeaderFillerView(Context context) {
             super(context);
@@ -358,30 +358,30 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
 
         public void setHeaderWidth(int width) {
-            this.headerWidth = width;
+            mHeaderWidth = width;
         }
 
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             View v = (View) getTag();
             if (v.getMeasuredHeight() == 0) {
-                v.measure(MeasureSpec.makeMeasureSpec(headerWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
+                v.measure(MeasureSpec.makeMeasureSpec(mHeaderWidth, MeasureSpec.EXACTLY), MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
             }
             setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), v.getMeasuredHeight());
         }
     }
 
     protected class HeaderHolder {
-        protected View headerView;
+        protected View mHeaderView;
     }
 
     protected class Position {
-        protected int header;
-        protected int position;
+        protected int mHeader;
+        protected int mPosition;
 
         protected Position(int position, int header) {
-            this.position = position;
-            this.header = header;
+            mPosition = position;
+            mHeader = header;
         }
     }
 
@@ -398,10 +398,10 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @author Anton Spaans, Tonic Artos
      */
     protected class ReferenceView extends FrameLayout {
-        private boolean forceMeasureDisabled;
-        private int numColumns;
-        private int position;
-        private View[] rowSiblings;
+        private boolean mForceMeasureDisabled;
+        private int mNumColumns;
+        private int mPosition;
+        private View[] mRowSiblings;
 
         public ReferenceView(Context context) {
             super(context);
@@ -431,16 +431,16 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
 
         public void setNumColumns(int numColumns) {
-            this.numColumns = numColumns;
+            mNumColumns = numColumns;
         }
 
         public void setPosition(int position) {
-            this.position = position;
+            mPosition = position;
         }
 
         @SuppressLint("NewApi")
         public void setRowSiblings(View[] rowSiblings) {
-            this.rowSiblings = rowSiblings;
+            mRowSiblings = rowSiblings;
         }
 
         @Override
@@ -464,15 +464,15 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
          * @param heightMeasureSpec
          */
         private void forceRowMeasurement(int widthMeasureSpec, int heightMeasureSpec) {
-            if (forceMeasureDisabled) {
+            if (mForceMeasureDisabled) {
                 return;
             }
 
-            forceMeasureDisabled = true;
-            for (View rowSibling : rowSiblings) {
+            mForceMeasureDisabled = true;
+            for (View rowSibling : mRowSiblings) {
                 rowSibling.measure(widthMeasureSpec, heightMeasureSpec);
             }
-            forceMeasureDisabled = false;
+            mForceMeasureDisabled = false;
         }
 
         @Override
@@ -484,17 +484,17 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
-            if (position % numColumns == 0) {
+            if (mPosition % mNumColumns == 0) {
                 forceRowMeasurement(widthMeasureSpec, heightMeasureSpec);
             }
 
-            if (rowSiblings == null) {
+            if (mRowSiblings == null) {
                 return;
             }
 
             int measuredHeight = getMeasuredHeight();
             int maxHeight = measuredHeight;
-            for (View rowSibling : rowSiblings) {
+            for (View rowSibling : mRowSiblings) {
                 if (rowSibling != null) {
                     maxHeight = Math.max(maxHeight, rowSibling.getMeasuredHeight());
                 }

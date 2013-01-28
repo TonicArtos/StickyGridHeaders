@@ -26,31 +26,23 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-
 /**
  * @author Tonic Artos
  *
  * @param <T>
  */
 public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implements StickyGridHeadersSimpleAdapter {
-    private int headerResId;
-    private LayoutInflater inflater;
-    private int itemResId;
-    private List<T> items;
-
-    public StickyGridHeadersSimpleArrayAdapter(Context context, T[] items, int headerResId, int itemResId) {
-        init(context, Arrays.asList(items), headerResId, itemResId);
-    }
+    private int mHeaderResId;
+    private LayoutInflater mInflater;
+    private int mItemResId;
+    private List<T> mItems;
 
     public StickyGridHeadersSimpleArrayAdapter(Context context, List<T> items, int headerResId, int itemResId) {
         init(context, items, headerResId, itemResId);
     }
 
-    private void init(Context context, List<T> items, int headerResId, int itemResId) {
-        this.items = items;
-        this.headerResId = headerResId;
-        this.itemResId = itemResId;
-        inflater = LayoutInflater.from(context);
+    public StickyGridHeadersSimpleArrayAdapter(Context context, T[] items, int headerResId, int itemResId) {
+        init(context, Arrays.asList(items), headerResId, itemResId);
     }
 
     @Override
@@ -60,7 +52,20 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
 
     @Override
     public int getCount() {
-        return items.size();
+        return mItems.size();
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+        T item = getItem(position);
+        CharSequence value;
+        if (item instanceof CharSequence) {
+            value = (CharSequence) item;
+        } else {
+            value = item.toString();
+        }
+
+        return value.subSequence(0, 1).charAt(0);
     }
 
     @Override
@@ -68,7 +73,7 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
         HeaderViewHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(headerResId, parent, false);
+            convertView = mInflater.inflate(mHeaderResId, parent, false);
             holder = new HeaderViewHolder();
             holder.textView = (TextView) convertView.findViewById(android.R.id.text1);
             convertView.setTag(holder);
@@ -84,7 +89,7 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
             string = item.toString();
         }
 
-        //set header text as first char in string
+        // set header text as first char in string
         holder.textView.setText(string.subSequence(0, 1));
 
         return convertView;
@@ -92,7 +97,7 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
 
     @Override
     public T getItem(int position) {
-        return items.get(position);
+        return mItems.get(position);
     }
 
     @Override
@@ -105,7 +110,7 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = inflater.inflate(itemResId, parent, false);
+            convertView = mInflater.inflate(mItemResId, parent, false);
             holder = new ViewHolder();
             holder.textView = (TextView) convertView.findViewById(android.R.id.text1);
             convertView.setTag(holder);
@@ -123,24 +128,18 @@ public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implemen
         return convertView;
     }
 
+    private void init(Context context, List<T> items, int headerResId, int itemResId) {
+        this.mItems = items;
+        this.mHeaderResId = headerResId;
+        this.mItemResId = itemResId;
+        mInflater = LayoutInflater.from(context);
+    }
+
     protected class HeaderViewHolder {
         public TextView textView;
     }
 
     protected class ViewHolder {
         public TextView textView;
-    }
-
-    @Override
-    public long getHeaderId(int position) {
-        T item = getItem(position);
-        CharSequence value;
-        if (item instanceof CharSequence) {
-            value = (CharSequence) item;
-        } else {
-            value = item.toString();
-        }
-
-        return value.subSequence(0, 1).charAt(0);
     }
 }

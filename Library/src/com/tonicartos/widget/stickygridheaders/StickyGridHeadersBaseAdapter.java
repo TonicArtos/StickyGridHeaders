@@ -24,17 +24,33 @@ import android.widget.ListAdapter;
  * Base adapter interface for StickyGridHeadersGridView. The adapter expects two
  * sets of data, items, and headers. Implement this interface to provide an
  * optimised method for generating the header data set. Otherwise see
- * {@link StickyGridHeadersSimpleAdapter} for a solution which will auto-generate the
- * set of headers.
- * 
+ * {@link StickyGridHeadersSimpleAdapter} for a solution which will
+ * auto-generate the set of headers.
+ *
  * @author Tonic Artos
  */
 public interface StickyGridHeadersBaseAdapter extends ListAdapter {
     /**
+     * Get the number of items with a given header.
+     *
+     * @param section
+     *            The header in the adapter's data set.
+     * @return The number of items for the specified header.
+     */
+    public int getCountForHeader(int header);
+
+    /**
+     * Get the number of headers in the adapter's data set.
+     *
+     * @return Number of headers.
+     */
+    public int getNumHeaders();
+
+    /**
      * Get a View that displays the header data at the specified position in the
      * set. You can either create a View manually or inflate it from an XML
      * layout file.
-     * 
+     *
      * @param position
      *            The position of the header within the adapter's header data
      *            set.
@@ -48,20 +64,4 @@ public interface StickyGridHeadersBaseAdapter extends ListAdapter {
      * @return A View corresponding to the data at the specified position.
      */
     View getHeaderView(int position, View convertView, ViewGroup parent);
-
-    /**
-     * Get the number of headers in the adapter's data set.
-     * 
-     * @return Number of headers.
-     */
-    public int getNumHeaders();
-
-    /**
-     * Get the number of items with a given header.
-     * 
-     * @param section
-     *            The header in the adapter's data set.
-     * @return The number of items for the specified header.
-     */
-    public int getCountForHeader(int header);
 }

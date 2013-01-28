@@ -32,6 +32,16 @@ import android.widget.ListAdapter;
  */
 public interface StickyGridHeadersSimpleAdapter extends ListAdapter {
     /**
+     * Get the header id associated with the specified position in the list.
+     * 
+     * @param position
+     *            The position of the item within the adapter's data set whose
+     *            header id we want.
+     * @return The id of the header at the specified position.
+     */
+    long getHeaderId(int position);
+
+    /**
      * Get a View that displays the header data at the specified position in the
      * set. You can either create a View manually or inflate it from an XML
      * layout file.
@@ -49,14 +59,4 @@ public interface StickyGridHeadersSimpleAdapter extends ListAdapter {
      * @return A View corresponding to the data at the specified position.
      */
     View getHeaderView(int position, View convertView, ViewGroup parent);
-
-    /**
-     * Get the header id associated with the specified position in the list.
-     * 
-     * @param position
-     *            The position of the item within the adapter's data set whose
-     *            header id we want.
-     * @return The id of the header at the specified position.
-     */
-    long getHeaderId(int position);
 }

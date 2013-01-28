@@ -29,52 +29,52 @@ import android.widget.BaseAdapter;
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
  * add sections and headers.
- * 
+ *
  * @author Tonic Artos
  */
 public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
-    private StickyGridHeadersSimpleAdapter delegate;
-    private List<HeaderData> headers;
+    private StickyGridHeadersSimpleAdapter mDelegate;
+    private List<HeaderData> mHeaders;
 
     public StickyGridHeadersSimpleAdapterWrapper(StickyGridHeadersSimpleAdapter adapter) {
-        delegate = adapter;
+        mDelegate = adapter;
         adapter.registerDataSetObserver(new DataSetObserverExtension());
-        headers = generateHeaderList(adapter);
+        mHeaders = generateHeaderList(adapter);
     }
 
     @Override
     public int getCount() {
-        return delegate.getCount();
+        return mDelegate.getCount();
     }
 
     @Override
     public int getCountForHeader(int position) {
-        return headers.get(position).getCount();
+        return mHeaders.get(position).getCount();
     }
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return delegate.getHeaderView(headers.get(position).getRefPosition(), convertView, parent);
+        return mDelegate.getHeaderView(mHeaders.get(position).getRefPosition(), convertView, parent);
     }
 
     @Override
     public Object getItem(int position) {
-        return delegate.getItem(position);
+        return mDelegate.getItem(position);
     }
 
     @Override
     public long getItemId(int position) {
-        return delegate.getItemId(position);
+        return mDelegate.getItemId(position);
     }
 
     @Override
     public int getNumHeaders() {
-        return headers.size();
+        return mHeaders.size();
     }
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        return delegate.getView(position, convertView, parent);
+        return mDelegate.getView(position, convertView, parent);
     }
 
     protected List<HeaderData> generateHeaderList(StickyGridHeadersSimpleAdapter adapter) {
@@ -98,34 +98,34 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
     private final class DataSetObserverExtension extends DataSetObserver {
         @Override
         public void onChanged() {
-            headers = generateHeaderList(delegate);
+            mHeaders = generateHeaderList(mDelegate);
         }
 
         @Override
         public void onInvalidated() {
-            headers.clear();
+            mHeaders.clear();
         }
     }
 
     private class HeaderData {
-        private int count;
-        private int refPosition;
+        private int mCount;
+        private int mRefPosition;
 
         public HeaderData(int refPosition) {
-            this.refPosition = refPosition;
-            this.count = 0;
+            mRefPosition = refPosition;
+            mCount = 0;
         }
 
         public int getCount() {
-            return count;
+            return mCount;
         }
 
         public int getRefPosition() {
-            return refPosition;
+            return mRefPosition;
         }
 
         public void incrementCount() {
-            count++;
+            mCount++;
         }
     }
 }
