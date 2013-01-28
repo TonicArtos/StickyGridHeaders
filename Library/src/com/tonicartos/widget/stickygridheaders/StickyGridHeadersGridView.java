@@ -36,10 +36,13 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.ReferenceView;
+
 /**
  * GridView that displays items in sections with headers that stick to the top
  * of the view.
- * 
+ *
  * @author Tonic Artos
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
