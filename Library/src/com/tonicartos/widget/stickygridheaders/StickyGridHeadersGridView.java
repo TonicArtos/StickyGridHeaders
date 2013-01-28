@@ -43,7 +43,7 @@ import android.widget.ListAdapter;
  * @author Tonic Artos
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
-    private StickyGridHeadersAdapterWrapper adapter;
+    private StickyGridHeadersBaseAdapterWrapper adapter;
     private boolean areHeadersSticky = true;
     private final Rect clippingRect = new Rect();
     private boolean clippingToPadding;
@@ -217,12 +217,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (!clipToPaddingHasBeenSet) {
             clippingToPadding = true;
         }
-        if (!(adapter instanceof StickyGridHeadersAdapter)) {
-            throw new IllegalArgumentException("Adapter must implement StickyGridHeadersAdapter");
+        if (!(adapter instanceof StickyGridHeadersBaseAdapter || adapter instanceof StickyGridHeadersSimpleAdapter)) {
+            throw new IllegalArgumentException("Adapter must implement either StickyGridHeadersSimpleAdapter or StickyGridHeadersBaseAdapter");
         }
         // NOTE: There may be a problem with getNumColumns(), it could give -1
         // which isn't useful.
-        this.adapter = new StickyGridHeadersAdapterWrapper(getContext(), this, (StickyGridHeadersAdapter) adapter, numColumns);
+        if (adapter instanceof StickyGridHeadersSimpleAdapter) {
+            adapter = new StickyGridHeadersSimpleAdapterWrapper((StickyGridHeadersSimpleAdapter) adapter);
+        }
+        this.adapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, (StickyGridHeadersBaseAdapter) adapter, numColumns);
         this.adapter.registerDataSetObserver(dataSetChangedObserver);
         reset();
         super.setAdapter(this.adapter);
@@ -281,7 +284,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         int vi = 0;
         for (int i = getFirstVisiblePosition(); i <= getLastVisiblePosition();) {
             long id = getItemIdAtPosition(i);
-            if (id == StickyGridHeadersAdapterWrapper.ID_HEADER) {
+            if (id == StickyGridHeadersBaseAdapterWrapper.ID_HEADER) {
                 headerPositions.add(vi);
             }
             i += numColumns;

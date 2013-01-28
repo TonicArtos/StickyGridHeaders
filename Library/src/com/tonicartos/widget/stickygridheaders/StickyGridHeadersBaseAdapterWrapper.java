@@ -32,7 +32,7 @@ import android.widget.BaseAdapter;
  * 
  * @author Tonic Artos
  */
-public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
+public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     private static final int NUM_VIEW_TYPES = 2;
     protected static final int POSITION_FAKE = -0x01;
     protected static final int POSITION_HEADER = -0x02;
@@ -41,7 +41,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     protected static final int VIEW_TYPE_FILLER = 0x00;
     protected static final int VIEW_TYPE_HEADER = 0x01;
 
-    public final StickyGridHeadersAdapter delegate;
+    public final StickyGridHeadersBaseAdapter delegate;
 
     private final Context context;
 
@@ -65,7 +65,7 @@ public class StickyGridHeadersAdapterWrapper extends BaseAdapter {
     private View[] rowSiblings;
     static private boolean prepopulation;
 
-    public StickyGridHeadersAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersAdapter delegate, int numColumns) {
+    public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersBaseAdapter delegate, int numColumns) {
         this.context = context;
         this.delegate = delegate;
         this.numColumns = numColumns;

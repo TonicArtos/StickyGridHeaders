@@ -26,28 +26,27 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+
 /**
  * @author Tonic Artos
  *
  * @param <T>
  */
-public class ArrayStickyGridHeadersAdapter<T> extends BaseAdapter implements StickyGridHeadersAdapter {
+public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implements StickyGridHeadersSimpleAdapter {
     private int headerResId;
-    private List<ArrayStickyGridHeaderData> headers;
     private LayoutInflater inflater;
     private int itemResId;
     private List<T> items;
 
-    public ArrayStickyGridHeadersAdapter(Context context, ArrayStickyGridHeaderData[] headers, T[] items, int headerResId, int itemResId) {
-        init(context, Arrays.asList(headers), Arrays.asList(items), headerResId, itemResId);
+    public StickyGridHeadersSimpleArrayAdapter(Context context, T[] items, int headerResId, int itemResId) {
+        init(context, Arrays.asList(items), headerResId, itemResId);
     }
 
-    public ArrayStickyGridHeadersAdapter(Context context, List<ArrayStickyGridHeaderData> headers, List<T> items, int headerResId, int itemResId) {
-        init(context, headers, items, headerResId, itemResId);
+    public StickyGridHeadersSimpleArrayAdapter(Context context, List<T> items, int headerResId, int itemResId) {
+        init(context, items, headerResId, itemResId);
     }
 
-    private void init(Context context, List<ArrayStickyGridHeaderData> headers, List<T> items, int headerResId, int itemResId) {
-        this.headers = headers;
+    private void init(Context context, List<T> items, int headerResId, int itemResId) {
         this.items = items;
         this.headerResId = headerResId;
         this.itemResId = itemResId;
@@ -65,21 +64,29 @@ public class ArrayStickyGridHeadersAdapter<T> extends BaseAdapter implements Sti
     }
 
     @Override
-    public int getCountForHeader(int header) {
-        return headers.get(header).count;
-    }
-
-    @Override
     @SuppressWarnings("unchecked")
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        HeaderViewHolder holder;
         if (convertView == null) {
             convertView = inflater.inflate(headerResId, parent, false);
-            HeaderViewHolder holder = new HeaderViewHolder();
+            holder = new HeaderViewHolder();
             holder.textView = (TextView) convertView.findViewById(android.R.id.text1);
             convertView.setTag(holder);
+        } else {
+            holder = (HeaderViewHolder) convertView.getTag();
         }
 
-        ((HeaderViewHolder) convertView.getTag()).textView.setText(headers.get(position).header);
+        T item = getItem(position);
+        CharSequence string;
+        if (item instanceof CharSequence) {
+            string = (CharSequence) item;
+        } else {
+            string = item.toString();
+        }
+
+        //set header text as first char in string
+        holder.textView.setText(string.subSequence(0, 1));
+
         return convertView;
     }
 
@@ -91,11 +98,6 @@ public class ArrayStickyGridHeadersAdapter<T> extends BaseAdapter implements Sti
     @Override
     public long getItemId(int position) {
         return position;
-    }
-
-    @Override
-    public int getNumHeaders() {
-        return headers.size();
     }
 
     @Override
@@ -127,5 +129,18 @@ public class ArrayStickyGridHeadersAdapter<T> extends BaseAdapter implements Sti
 
     protected class ViewHolder {
         public TextView textView;
+    }
+
+    @Override
+    public long getHeaderId(int position) {
+        T item = getItem(position);
+        CharSequence value;
+        if (item instanceof CharSequence) {
+            value = (CharSequence) item;
+        } else {
+            value = item.toString();
+        }
+
+        return value.subSequence(0, 1).charAt(0);
     }
 }

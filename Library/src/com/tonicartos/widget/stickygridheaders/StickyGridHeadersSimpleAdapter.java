@@ -21,19 +21,24 @@ import android.view.ViewGroup;
 import android.widget.ListAdapter;
 
 /**
- * Adapter interface for StickyGridHeadersGridView.
+ * Adapter interface for StickyGridHeadersGridView. The adapter expects two sets
+ * of data, items, and headers. Implement this interface to provide an optimised
+ * method for generating the header data set.
+ * 
+ * The is a second interface
+ * {@link com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapter}.
  * 
  * @author Tonic Artos
  */
-public interface StickyGridHeadersAdapter extends ListAdapter {
+public interface StickyGridHeadersSimpleAdapter extends ListAdapter {
     /**
      * Get a View that displays the header data at the specified position in the
      * set. You can either create a View manually or inflate it from an XML
      * layout file.
      * 
      * @param position
-     *            The position of the item within the adapter's data set of the
-     *            item whose header view we want.
+     *            The position of the header within the adapter's header data
+     *            set.
      * @param convertView
      *            The old view to reuse, if possible. Note: You should check
      *            that this view is non-null and of an appropriate type before
@@ -46,38 +51,12 @@ public interface StickyGridHeadersAdapter extends ListAdapter {
     View getHeaderView(int position, View convertView, ViewGroup parent);
 
     /**
-     * Get the number of headers in the adapter's data set.
+     * Get the header id associated with the specified position in the list.
      * 
-     * @return Number of headers.
+     * @param position
+     *            The position of the item within the adapter's data set whose
+     *            header id we want.
+     * @return The id of the header at the specified position.
      */
-    public int getNumHeaders();
-
-    /**
-     * Get the number of items with a given header.
-     * 
-     * @param section
-     *            The header in the adapter's data set.
-     * @return The number of items for the specified header.
-     */
-    public int getCountForHeader(int header);
-
-    @Override
-    /**
-     * Unneeded for StickyGridHeadersAdapter.
-     */
-    public int getCount();
-
-    /**
-     * Get a view that is used to fill in the empty spaces behind the header.
-     * The height of the view should match the header view.
-     * <p>
-     * Tags on this view will be discarded.
-     * </p>
-     * 
-     * @param convertView
-     *            View to reuse for the header filler.
-     * @param parent
-     * @return Header filler view.
-     */
-    // public View getHeaderFillerView(View convertView, ViewGroup parent);
+    long getHeaderId(int position);
 }
