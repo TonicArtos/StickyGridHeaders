@@ -30,9 +30,7 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent.DummyItem;
-import com.tonicartos.widget.stickygridheaders.ArrayStickyGridHeadersAdapter;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapter;
 
 /**
  * A list fragment representing a list of Items. This fragment also supports
@@ -42,7 +40,7 @@ import com.tonicartos.widget.stickygridheaders.ArrayStickyGridHeadersAdapter;
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
- * 
+ *
  * @author Tonic Artos
  */
 public class ItemListFragment extends SherlockFragment implements OnItemClickListener {
@@ -54,7 +52,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
      */
     private static Callbacks sDummyCallbacks = new Callbacks() {
         @Override
-        public void onItemSelected(String id) {
+        public void onItemSelected(int id) {
         }
     };
 
@@ -113,7 +111,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(DummyContent.ITEMS.get(position).id);
+        mCallbacks.onItemSelected(position);
     }
 
     @Override
@@ -132,7 +130,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         gridView = (GridView) view.findViewById(R.id.asset_grid);
         gridView.setOnItemClickListener(this);
         gridView.setNumColumns(3);
-        gridView.setAdapter(new ArrayStickyGridHeadersAdapter<DummyItem>(getActivity().getApplicationContext(), DummyContent.HEADERS, DummyContent.ITEMS, R.layout.header, R.layout.item));
+        gridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
 
         if (savedInstanceState != null) {
             firstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
@@ -180,6 +178,6 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         /**
          * Callback for when an item has been selected.
          */
-        public void onItemSelected(String id);
+        public void onItemSelected(int position);
     }
 }

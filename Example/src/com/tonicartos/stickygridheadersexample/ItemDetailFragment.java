@@ -16,15 +16,13 @@
 
 package com.tonicartos.stickygridheadersexample;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent;
-import com.tonicartos.stickygridheadersexample.dummy.DummyContent.DummyItem;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+
+import com.actionbarsherlock.app.SherlockFragment;
 
 /**
  * A fragment representing a single Item detail screen. This fragment is either
@@ -43,7 +41,7 @@ public class ItemDetailFragment extends SherlockFragment {
     /**
      * The dummy content this fragment is presenting.
      */
-    private DummyItem mItem;
+    private int mItem;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -60,7 +58,7 @@ public class ItemDetailFragment extends SherlockFragment {
             // Load the dummy content specified by the fragment
             // arguments. In a real-world scenario, use a Loader
             // to load content from a content provider.
-            mItem = DummyContent.ITEM_MAP.get(getArguments().getString(ARG_ITEM_ID));
+            mItem = getArguments().getInt(ARG_ITEM_ID);
         }
     }
 
@@ -68,10 +66,7 @@ public class ItemDetailFragment extends SherlockFragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View rootView = inflater.inflate(R.layout.fragment_item_detail, container, false);
 
-        // Show the dummy content as text in a TextView.
-        if (mItem != null) {
-            ((TextView) rootView.findViewById(R.id.item_detail)).setText(mItem.content);
-        }
+        ((TextView) rootView.findViewById(R.id.item_detail)).setText(getResources().getStringArray(R.array.countries)[mItem]);
         return rootView;
     }
 }
