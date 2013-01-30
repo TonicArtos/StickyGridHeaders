@@ -360,7 +360,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mNumColumns == AUTO_FIT) {
-            mNumColumns = MeasureSpec.getSize(widthMeasureSpec) / mColumnWidth;
+            mNumColumns = (MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight()) / mColumnWidth;
             mAdapter.setNumColumns(mNumColumns);
         }
 
