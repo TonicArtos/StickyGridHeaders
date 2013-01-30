@@ -51,6 +51,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private final Rect mClippingRect = new Rect();
     private boolean mClippingToPadding;
     private boolean mClipToPaddingHasBeenSet;
+    private int mColumnWidth;
     private long mCurrentHeaderId = -1;
     private DataSetObserver mDataSetChangedObserver = new DataSetObserver() {
         @Override
@@ -64,7 +65,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
     };
     private int mHeaderBottomPosition;
-    private int mNumColumns;
+    private int mNumColumns = 1;
 
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
@@ -138,7 +139,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (adapter instanceof StickyGridHeadersSimpleAdapter) {
             adapter = new StickyGridHeadersSimpleAdapterWrapper((StickyGridHeadersSimpleAdapter) adapter);
         }
-        this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, (StickyGridHeadersBaseAdapter) adapter, mNumColumns);
+        this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, (StickyGridHeadersBaseAdapter) adapter);
         this.mAdapter.registerDataSetObserver(mDataSetChangedObserver);
         reset();
         super.setAdapter(this.mAdapter);
@@ -152,11 +153,16 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     }
 
     @Override
+    public void setColumnWidth(int columnWidth) {
+        super.setColumnWidth(columnWidth);
+        mColumnWidth = columnWidth;
+    }
+
+    @Override
     public void setNumColumns(int numColumns) {
         super.setNumColumns(numColumns);
         this.mNumColumns = numColumns;
-
-        if (mAdapter != null) {
+        if (numColumns != AUTO_FIT && mAdapter != null) {
             mAdapter.setNumColumns(numColumns);
         }
     }
@@ -349,5 +355,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         mStickiedHeader.draw(canvas);
         canvas.restore();
         canvas.restore();
+    }
+
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        if (mNumColumns == AUTO_FIT) {
+            mNumColumns = MeasureSpec.getSize(widthMeasureSpec) / mColumnWidth;
+            mAdapter.setNumColumns(mNumColumns);
+        }
+
+        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 }

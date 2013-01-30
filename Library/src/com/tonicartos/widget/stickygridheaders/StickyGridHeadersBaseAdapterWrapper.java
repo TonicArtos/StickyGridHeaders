@@ -66,15 +66,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     private StickyGridHeadersGridView mDridView;
 
     private final List<View> mHeaderCache = new ArrayList<View>();
-    private int mNumColumns;
+    private int mNumColumns = 1;
     private View[] mRowSiblings;
 
-    public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersBaseAdapter delegate, int numColumns) {
+    public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView, StickyGridHeadersBaseAdapter delegate) {
         mContext = context;
         mDelegate = delegate;
-        mNumColumns = numColumns;
         mDridView = gridView;
-        initRowSiblings(numColumns);
         delegate.registerDataSetObserver(mDataSetObserver);
     }
 
@@ -225,6 +223,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
         initRowSiblings(numColumns);
+        notifyDataSetChanged();
     }
 
     @Override
