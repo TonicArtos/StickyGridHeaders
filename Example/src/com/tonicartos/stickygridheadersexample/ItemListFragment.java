@@ -21,6 +21,7 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,7 +130,8 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
         gridView = (GridView) view.findViewById(R.id.asset_grid);
         gridView.setOnItemClickListener(this);
-        gridView.setNumColumns(3);
+        gridView.setColumnWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics()));
+        gridView.setNumColumns(-1);
         gridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
 
         if (savedInstanceState != null) {
