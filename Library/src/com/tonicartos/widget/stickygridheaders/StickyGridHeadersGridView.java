@@ -336,17 +336,21 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             scrollChanged(getFirstVisiblePosition());
         }
 
-        // Mask the region where we will draw the header later...
+        // Mask the region where we will draw the header later, but only if we
+        // will draw a header.
+        boolean willDrawStickiedHeader = mStickiedHeader != null && mAreHeadersSticky;
         int headerHeight = getHeaderHeight();
         int top = mHeaderBottomPosition - headerHeight;
 
-        mClippingRect.left = getPaddingLeft();
-        mClippingRect.right = getWidth() - getPaddingRight();
-        mClippingRect.top = mHeaderBottomPosition;
-        mClippingRect.bottom = getHeight();
+        if (willDrawStickiedHeader) {
+            mClippingRect.left = getPaddingLeft();
+            mClippingRect.right = getWidth() - getPaddingRight();
+            mClippingRect.top = mHeaderBottomPosition;
+            mClippingRect.bottom = getHeight();
 
-        canvas.save();
-        canvas.clipRect(mClippingRect);
+            canvas.save();
+            canvas.clipRect(mClippingRect);
+        }
 
         // ...and draw the grid view.
         super.dispatchDraw(canvas);
@@ -388,9 +392,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             header.draw(canvas);
             canvas.restore();
         }
-        canvas.restore();
 
-        if (mStickiedHeader == null || !mAreHeadersSticky) {
+        if (willDrawStickiedHeader) {
+            canvas.restore();
+        } else {
+            // Done.
             return;
         }
 
