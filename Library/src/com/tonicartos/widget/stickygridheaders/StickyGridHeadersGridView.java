@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -36,6 +37,7 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
 
+import com.tonicartos.stickygridheaders.R;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.ReferenceView;
 
@@ -65,14 +67,14 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
     };
     private int mHeaderBottomPosition;
-    private int mNumColumns = 1;
+    private int mHorizontalSpacing;
 
+    private int mNumColumns = 1;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnItemSelectedListener mOnItemSelectedListener;
     private OnScrollListener mScrollListener;
     private View mStickiedHeader;
-    private int mHorizontalSpacing;
 
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
@@ -86,6 +88,20 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         super(context, attrs, defStyle);
         super.setOnScrollListener(this);
         setVerticalFadingEdgeEnabled(false);
+
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyGridHeadersGridView);
+        for (int i = 0; i < a.getIndexCount(); i++) {
+            final int attr = a.getIndex(i);
+            switch (attr) {
+            case R.styleable.StickyGridHeadersGridView_areHeadersSticky:
+                mAreHeadersSticky = a.getBoolean(attr, true);
+                break;
+            }
+        }
+    }
+
+    public boolean areHeadersSticky() {
+        return mAreHeadersSticky;
     }
 
     @Override
@@ -154,15 +170,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     }
 
     @Override
-    public void setHorizontalSpacing(int horizontalSpacing) {
-        super.setHorizontalSpacing(horizontalSpacing);
-        mHorizontalSpacing = horizontalSpacing;
-    }
-
-    @Override
     public void setColumnWidth(int columnWidth) {
         super.setColumnWidth(columnWidth);
         mColumnWidth = columnWidth;
+    }
+
+    @Override
+    public void setHorizontalSpacing(int horizontalSpacing) {
+        super.setHorizontalSpacing(horizontalSpacing);
+        mHorizontalSpacing = horizontalSpacing;
     }
 
     @Override
@@ -190,6 +206,13 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     public void setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener listener) {
         this.mOnItemSelectedListener = listener;
         super.setOnItemSelectedListener(this);
+    }
+
+    public void setAreHeadersSticky(boolean useStickyHeaders) {
+        if (useStickyHeaders != mAreHeadersSticky) {
+            mAreHeadersSticky = useStickyHeaders;
+            requestLayout();
+        }
     }
 
     private int getHeaderHeight() {
