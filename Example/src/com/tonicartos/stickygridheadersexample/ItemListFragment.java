@@ -31,6 +31,10 @@ import android.widget.GridView;
 import android.widget.ListView;
 
 import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapter;
 
 /**
@@ -144,6 +148,30 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.menu_toggle_sticky:
+            item.setChecked(!item.isChecked());
+            ((StickyGridHeadersGridView) gridView).setAreHeadersSticky(!((StickyGridHeadersGridView) gridView).areHeadersSticky());
+
+            return true;
+
+        default:
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_item_list, menu);
+        menu.findItem(R.id.menu_toggle_sticky)
+            .setChecked(((StickyGridHeadersGridView) gridView).areHeadersSticky());
     }
 
     private float calculatePixelsFromDips(float dips) {
