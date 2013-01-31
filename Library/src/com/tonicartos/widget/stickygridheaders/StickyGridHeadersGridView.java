@@ -25,6 +25,8 @@ import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.os.Build;
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -125,6 +127,25 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     }
 
     @Override
+    public void onRestoreInstanceState(Parcelable state) {
+        SavedState ss = (SavedState) state;
+
+        super.onRestoreInstanceState(ss.getSuperState());
+        mAreHeadersSticky = ss.areHeadersSticky;
+
+        requestLayout();
+    }
+
+    @Override
+    public Parcelable onSaveInstanceState() {
+        Parcelable superState = super.onSaveInstanceState();
+
+        SavedState ss = new SavedState(superState);
+        ss.areHeadersSticky = mAreHeadersSticky;
+        return ss;
+    }
+
+    @Override
     public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
         if (mScrollListener != null) {
             mScrollListener.onScroll(view, firstVisibleItem, visibleItemCount, totalItemCount);
@@ -160,6 +181,13 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         this.mAdapter.registerDataSetObserver(mDataSetChangedObserver);
         reset();
         super.setAdapter(this.mAdapter);
+    }
+
+    public void setAreHeadersSticky(boolean useStickyHeaders) {
+        if (useStickyHeaders != mAreHeadersSticky) {
+            mAreHeadersSticky = useStickyHeaders;
+            requestLayout();
+        }
     }
 
     @Override
@@ -206,13 +234,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     public void setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener listener) {
         this.mOnItemSelectedListener = listener;
         super.setOnItemSelectedListener(this);
-    }
-
-    public void setAreHeadersSticky(boolean useStickyHeaders) {
-        if (useStickyHeaders != mAreHeadersSticky) {
-            mAreHeadersSticky = useStickyHeaders;
-            requestLayout();
-        }
     }
 
     private int getHeaderHeight() {
@@ -410,5 +431,47 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    /**
+     * Constructor called from {@link #CREATOR}
+     */
+    static class SavedState extends BaseSavedState {
+        public static final Parcelable.Creator<SavedState> CREATOR = new Parcelable.Creator<SavedState>() {
+            @Override
+            public SavedState createFromParcel(Parcel in) {
+                return new SavedState(in);
+            }
+
+            @Override
+            public SavedState[] newArray(int size) {
+                return new SavedState[size];
+            }
+        };
+
+        boolean areHeadersSticky;
+
+        public SavedState(Parcelable superState) {
+            super(superState);
+        }
+
+        /**
+         * Constructor called from {@link #CREATOR}
+         */
+        private SavedState(Parcel in) {
+            super(in);
+            areHeadersSticky = in.readByte() != 0;
+        }
+
+        @Override
+        public String toString() {
+            return "StickyGridHeadersGridView.SavedState{" + Integer.toHexString(System.identityHashCode(this)) + " areHeadersSticky=" + areHeadersSticky + "}";
+        }
+
+        @Override
+        public void writeToParcel(Parcel out, int flags) {
+            super.writeToParcel(out, flags);
+            out.writeByte((byte) (areHeadersSticky ? 1 : 0));
+        }
     }
 }
