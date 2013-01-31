@@ -130,7 +130,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
         gridView = (GridView) view.findViewById(R.id.asset_grid);
         gridView.setOnItemClickListener(this);
-        gridView.setColumnWidth((int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 100, getResources().getDisplayMetrics()));
+        gridView.setColumnWidth((int) calculatePixelsFromDips(100));
         gridView.setNumColumns(-1);
         gridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
 
@@ -144,6 +144,10 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
+    }
+
+    private float calculatePixelsFromDips(float dips) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, getResources().getDisplayMetrics());
     }
 
     /**
