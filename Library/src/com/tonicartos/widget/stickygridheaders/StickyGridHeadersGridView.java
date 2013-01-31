@@ -72,6 +72,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private OnItemSelectedListener mOnItemSelectedListener;
     private OnScrollListener mScrollListener;
     private View mStickiedHeader;
+    private int mHorizontalSpacing;
 
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
@@ -150,6 +151,12 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         super.setClipToPadding(clipToPadding);
         mClippingToPadding = clipToPadding;
         mClipToPaddingHasBeenSet = true;
+    }
+
+    @Override
+    public void setHorizontalSpacing(int horizontalSpacing) {
+        super.setHorizontalSpacing(horizontalSpacing);
+        mHorizontalSpacing = horizontalSpacing;
     }
 
     @Override
@@ -360,7 +367,17 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mNumColumns == AUTO_FIT) {
-            mNumColumns = (MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight()) / mColumnWidth;
+            int gridWidth = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
+            mNumColumns = gridWidth / mColumnWidth;
+            while (mNumColumns != 1) {
+                if (mNumColumns * mColumnWidth + (mNumColumns - 1) * mHorizontalSpacing > gridWidth) {
+                    mNumColumns--;
+                } else {
+                    break;
+                }
+            }
+            mAdapter.setNumColumns(mNumColumns);
+        } else {
             mAdapter.setNumColumns(mNumColumns);
         }
 
