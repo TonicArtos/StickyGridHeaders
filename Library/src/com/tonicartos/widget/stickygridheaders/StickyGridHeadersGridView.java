@@ -322,7 +322,12 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         // Draw headers in list.
         for (int i = 0; i < headerPositions.size(); i++) {
             View frame = getChildAt(headerPositions.get(i));
-            View header = (View) frame.getTag();
+            View header;
+            try {
+                header = (View) frame.getTag();
+            } catch (Exception e) {
+                return;
+            }
 
             int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
             int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
