@@ -18,8 +18,11 @@ package com.tonicartos.stickygridheadersexample;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 
 /**
  * An activity representing a list of Items. This activity has different
@@ -35,7 +38,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * <p>
  * This activity also implements the required {@link ItemListFragment.Callbacks}
  * interface to listen for item selections.
- * 
+ *
  * @author Tonic Artos
  */
 public class ItemListActivity extends SherlockFragmentActivity implements ItemListFragment.Callbacks {
@@ -60,8 +63,8 @@ public class ItemListActivity extends SherlockFragmentActivity implements ItemLi
             ItemDetailFragment fragment = new ItemDetailFragment();
             fragment.setArguments(arguments);
             getSupportFragmentManager().beginTransaction()
-            .replace(R.id.item_detail_container, fragment)
-            .commit();
+                                       .replace(R.id.item_detail_container, fragment)
+                                       .commit();
         } else {
             // In single-pane mode, simply start the detail activity
             // for the selected item ID.
@@ -88,5 +91,36 @@ public class ItemListActivity extends SherlockFragmentActivity implements ItemLi
             ((ItemListFragment) getSupportFragmentManager().findFragmentById(R.id.item_list)).setActivateOnItemClick(true);
         }
         // TODO: If exposing deep links into your app, handle intents here.
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.github:
+            Util.goToGitHub(this);
+            return true;
+        case R.id.about:
+            Util.showHtmlDialog(this, R.string.title_about, R.string.content_about);
+            return true;
+        case R.id.licenses:
+            Util.showHtmlDialog(this, R.string.title_licenses, R.string.content_licenses);
+            return true;
+        case R.id.contact:
+            try {
+                startActivity(Util.makeSendEmailIntent(this, R.string.email_contact, R.string.email_subject_contact));
+            } catch (Exception e) {
+                Toast.makeText(this, R.string.error_missing_email_method, Toast.LENGTH_SHORT)
+                     .show();
+            }
+
+            break;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getSupportMenuInflater().inflate(R.menu.main, menu);
+        return true;
     }
 }
