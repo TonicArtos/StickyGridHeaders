@@ -13,18 +13,33 @@ inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeade
 ## Usage
 
 `StickyGridHeadersGridView` replaces the use of a `GridView` in your
-application and is used in the same manner. The `ListAdapter` must implement
-one of either `StickyGridHeadersBaseAdapter` or
+application and is used in the same manner. To get all the functionality your
+`ListAdapter` must implement one of either `StickyGridHeadersBaseAdapter` or
 `StickyGridHeadersSimpleAdapter`. The choice of the implementation allows you
 to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.
 
+StickyGridHeaders provides some custom XML attributes so you can customise
+`StickyGridHeadersGridView` in your XML layouts. To use the attributes you just
+need to add a custom namespace to your layout.
+```
+xmlns:app="http://schemas.android.com/apk/res-auto"
+```
+To see a list of the current attributes provided, refer to 
+[attrs.xml](Library/res/values/attrs.xml).
+
+
+## Compatibility
+
 The simple adapter interface has the same signature as
-`StickyListHeadersAdapter` so if you are using the StickyListHeaders library
+`StickyListHeadersAdapter` so if you are using the StickyListHeaders library 
 your adapters are already ready for StickyGridHeaders.
 
-Included in this project is an example demonstrating the use of the library.
+
+## Example
+![Example App Portrait Screenshots](http://4.bp.blogspot.com/-S_BbhWX6wTY/UQpW0cwUGEI/AAAAAAAAGvU/zzJXj-PcVbY/s1600/screen-landscape-smaller.png)
+The example source code is included in this repository.
 
 
 ## License
