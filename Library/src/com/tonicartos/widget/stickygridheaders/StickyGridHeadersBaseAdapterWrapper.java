@@ -84,7 +84,12 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     @Override
     public int getCount() {
         mCount = 0;
-        for (int i = 0; i < mDelegate.getNumHeaders(); i++) {
+        int numHeaders = mDelegate.getNumHeaders();
+        if (numHeaders == 0) {
+            return mDelegate.getCount();
+        }
+
+        for (int i = 0; i < numHeaders; i++) {
             // Pad count with space for header and trailing filler in header
             // group.
             mCount += mDelegate.getCountForHeader(i) + unFilledSpacesInHeaderGroup(i) + mNumColumns;
@@ -271,15 +276,28 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     }
 
     protected View getHeaderView(int position, View convertView, ViewGroup parent) {
+        if (mDelegate.getNumHeaders() == 0) {
+            return null;
+        }
+
         return mDelegate.getHeaderView(translatePosition(position).mHeader, convertView, parent);
     }
 
     protected Position translatePosition(int position) {
+        int numHeaders = mDelegate.getNumHeaders();
+        if (numHeaders == 0) {
+            if (position >= mDelegate.getCount()) {
+                return new Position(POSITION_FILLER, 0);
+            }
+            return new Position(position, 0);
+        }
+
         // Translate GridView position to Adapter position.
         int adapterPosition = position;
         int place = position;
         int i;
-        for (i = 0; i < mDelegate.getNumHeaders(); i++) {
+
+        for (i = 0; i < numHeaders; i++) {
             int sectionCount = mDelegate.getCountForHeader(i);
 
             // Skip past fake items making space for header in front of
@@ -311,7 +329,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     protected void updateCount() {
         mCount = 0;
-        for (int i = 0; i < mDelegate.getNumHeaders(); i++) {
+        int numHeaders = mDelegate.getNumHeaders();
+        if (numHeaders == 0) {
+            mCount = mDelegate.getCount();
+            return;
+        }
+
+        for (int i = 0; i < numHeaders; i++) {
             mCount += mDelegate.getCountForHeader(i) + mNumColumns;
         }
     }

@@ -169,15 +169,19 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (!mClipToPaddingHasBeenSet) {
             mClippingToPadding = true;
         }
-        if (!(adapter instanceof StickyGridHeadersBaseAdapter || adapter instanceof StickyGridHeadersSimpleAdapter)) {
-            throw new IllegalArgumentException("Adapter must implement either StickyGridHeadersSimpleAdapter or StickyGridHeadersBaseAdapter");
+
+        StickyGridHeadersBaseAdapter baseAdapter;
+        if (adapter instanceof StickyGridHeadersBaseAdapter) {
+            baseAdapter = (StickyGridHeadersBaseAdapter) adapter;
+        } else if (adapter instanceof StickyGridHeadersSimpleAdapter) {
+            // Wrap up simple adapter to auto-generate the data we need.
+            baseAdapter = new StickyGridHeadersSimpleAdapterWrapper((StickyGridHeadersSimpleAdapter) adapter);
+        } else {
+            // Wrap up a list adapter so it is an adapter with zero headers.
+            baseAdapter = new StickyGridHeadersListAdapterWrapper(adapter);
         }
-        // NOTE: There may be a problem with getNumColumns(), it could give -1
-        // which isn't useful.
-        if (adapter instanceof StickyGridHeadersSimpleAdapter) {
-            adapter = new StickyGridHeadersSimpleAdapterWrapper((StickyGridHeadersSimpleAdapter) adapter);
-        }
-        this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, (StickyGridHeadersBaseAdapter) adapter);
+
+        this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, baseAdapter);
         this.mAdapter.registerDataSetObserver(mDataSetChangedObserver);
         reset();
         super.setAdapter(this.mAdapter);
@@ -244,6 +248,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     }
 
     private void measureHeader() {
+        if (mStickiedHeader == null) {
+            return;
+        }
+
         int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
         int heightMeasureSpec = 0;
 
