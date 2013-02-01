@@ -41,17 +41,21 @@ inspired by, <a href="http://github.com/emilsjolander/StickyListHeaders">StickyL
 
 <h2>Usage</h2>
 
-<p><code>StickyGridHeadersGridView</code> replaces the use of a <code>GridView</code> in your
-application and is used in the same manner. The <code>ListAdapter</code> must implement
+<p><code>StickyGridHeadersGridView</code> is a drop-in replacement of any <code>GridView</code> in your
+application and is used in the same manner. To display headers your <code>ListAdapter</code> must implement
 one of either <code>StickyGridHeadersBaseAdapter</code> or
 <code>StickyGridHeadersSimpleAdapter</code>. The choice of the implementation allows you
 to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.</p>
 
+<p>The standard <code>ListView</code> is also supported in case you just want the benefit of 
+the improved row height calculations, the rows are sized to match the height of
+all items in the row, in StickyGridHeaders.</p>
+
 <p>The simple adapter interface has the same signature as
 <code>StickyListHeadersAdapter</code> so if you are using the StickyListHeaders library
-your adapters are already ready for StickyGridHeaders.</p>
+your adapters are already fully ready for StickyGridHeaders.</p>
 
 <h2>Example</h2>
 
