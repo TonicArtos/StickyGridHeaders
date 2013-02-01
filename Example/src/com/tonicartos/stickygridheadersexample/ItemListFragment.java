@@ -27,6 +27,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 
@@ -79,6 +80,8 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
      * clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+
+    private Menu mMenu;
 
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
@@ -160,6 +163,18 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
             ((StickyGridHeadersGridView) gridView).setAreHeadersSticky(!((StickyGridHeadersGridView) gridView).areHeadersSticky());
 
             return true;
+        case R.id.menu_use_list_adapter:
+            gridView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item, getResources().getStringArray(R.array.countries)));
+            mMenu.findItem(R.id.menu_use_list_adapter).setVisible(false);
+            mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(true);
+            mMenu.findItem(R.id.menu_toggle_sticky).setVisible(false);
+            return true;
+        case R.id.menu_use_sticky_adapter:
+            gridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
+            mMenu.findItem(R.id.menu_use_list_adapter).setVisible(true);
+            mMenu.findItem(R.id.menu_toggle_sticky).setVisible(true);
+            mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(false);
+            return true;
 
         default:
             break;
@@ -170,6 +185,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_item_list, menu);
+        mMenu = menu;
         menu.findItem(R.id.menu_toggle_sticky)
             .setChecked(((StickyGridHeadersGridView) gridView).areHeadersSticky());
     }
