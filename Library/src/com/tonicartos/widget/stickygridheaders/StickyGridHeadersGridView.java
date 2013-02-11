@@ -94,10 +94,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyGridHeadersGridView);
         for (int i = 0; i < a.getIndexCount(); i++) {
             final int attr = a.getIndex(i);
-            switch (attr) {
-            case R.styleable.StickyGridHeadersGridView_areHeadersSticky:
+            if (attr == R.styleable.StickyGridHeadersGridView_areHeadersSticky) {
                 mAreHeadersSticky = a.getBoolean(attr, true);
-                break;
             }
         }
     }
