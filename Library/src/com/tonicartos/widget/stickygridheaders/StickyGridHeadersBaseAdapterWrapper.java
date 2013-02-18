@@ -55,11 +55,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         @Override
         public void onChanged() {
             updateCount();
+            notifyDataSetChanged();
         }
 
         @Override
         public void onInvalidated() {
             mHeaderCache.clear();
+            notifyDataSetInvalidated();
         }
     };
 

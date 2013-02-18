@@ -1,5 +1,6 @@
 package com.tonicartos.widget.stickygridheaders;
 
+import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
@@ -8,8 +9,21 @@ import android.widget.ListAdapter;
 public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
     private ListAdapter mDelegate;
 
+    private DataSetObserver mDataSetObserver = new DataSetObserver() {
+        @Override
+        public void onChanged() {
+            notifyDataSetChanged();
+        }
+
+        @Override
+        public void onInvalidated() {
+            notifyDataSetInvalidated();
+        }
+    };
+
     public StickyGridHeadersListAdapterWrapper(ListAdapter adapter) {
         mDelegate = adapter;
+        adapter.registerDataSetObserver(mDataSetObserver);
     }
 
     @Override
