@@ -71,13 +71,14 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private int mHeaderBottomPosition;
     private int mHorizontalSpacing;
 
-    private int mNumColumns = AUTO_FIT;
+    private int mNumColumns; //Must be set from the wrapped GridView in the constructor.
     private int mNumMeasuredColumns = 1;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnItemSelectedListener mOnItemSelectedListener;
     private OnScrollListener mScrollListener;
     private View mStickiedHeader;
+    private boolean mNumColumnsSet;
 
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
@@ -91,7 +92,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         super(context, attrs, defStyle);
         super.setOnScrollListener(this);
         setVerticalFadingEdgeEnabled(false);
-
+        
+        if (!mNumColumnsSet) {
+            mNumColumns = AUTO_FIT;
+        }
+        
         TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyGridHeadersGridView);
         for (int i = 0; i < a.getIndexCount(); i++) {
             final int attr = a.getIndex(i);
@@ -168,6 +173,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (!mClipToPaddingHasBeenSet) {
             mClippingToPadding = true;
         }
+        
 
         StickyGridHeadersBaseAdapter baseAdapter;
         if (adapter instanceof StickyGridHeadersBaseAdapter) {
@@ -215,6 +221,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     public void setNumColumns(int numColumns) {
         super.setNumColumns(numColumns);
+        mNumColumnsSet = true;
         this.mNumColumns = numColumns;
         if (numColumns != AUTO_FIT && mAdapter != null) {
             mAdapter.setNumColumns(numColumns);
