@@ -71,7 +71,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private int mHeaderBottomPosition;
     private int mHorizontalSpacing;
 
-    private int mNumColumns = 1;
+    private int mNumColumns = AUTO_FIT;
+    private int mNumMeasuredColumns = 1;
     private OnItemClickListener mOnItemClickListener;
     private OnItemLongClickListener mOnItemLongClickListener;
     private OnItemSelectedListener mOnItemSelectedListener;
@@ -291,7 +292,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             int watchingChildDistance = 99999;
 
             // Find the next header after the stickied one.
-            for (int i = 0; i < childCount; i += mNumColumns) {
+            for (int i = 0; i < childCount; i += mNumMeasuredColumns) {
                 ReferenceView child = (ReferenceView) super.getChildAt(i);
 
                 int childDistance;
@@ -369,8 +370,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             if (id == StickyGridHeadersBaseAdapterWrapper.ID_HEADER) {
                 headerPositions.add(vi);
             }
-            i += mNumColumns;
-            vi += mNumColumns;
+            i += mNumMeasuredColumns;
+            vi += mNumMeasuredColumns;
         }
 
         // Draw headers in list.
@@ -428,18 +429,26 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mNumColumns == AUTO_FIT) {
-            int gridWidth = MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight();
-            mNumColumns = gridWidth / mColumnWidth;
-            while (mNumColumns != 1) {
-                if (mNumColumns * mColumnWidth + (mNumColumns - 1) * mHorizontalSpacing > gridWidth) {
-                    mNumColumns--;
-                } else {
-                    break;
-                }
+            int gridWidth = Math.max(MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight(), 0);
+            int measuredColumns = gridWidth / mColumnWidth;
+            if (measuredColumns > 0) {
+				mNumMeasuredColumns = measuredColumns;
+	            while (mNumMeasuredColumns != 1) {
+	                if (mNumMeasuredColumns * mColumnWidth + (mNumMeasuredColumns - 1) * mHorizontalSpacing > gridWidth) {
+	                    mNumMeasuredColumns--;
+	                } else {
+	                    break;
+	                }
+	            }
+	            mAdapter.setNumColumns(mNumMeasuredColumns);
             }
-            mAdapter.setNumColumns(mNumColumns);
+            else {
+				mNumMeasuredColumns = 1;
+            	mAdapter.setNumColumns(1);
+            }
         } else {
-            mAdapter.setNumColumns(mNumColumns);
+        	mNumMeasuredColumns = mNumColumns;
+            mAdapter.setNumColumns(mNumMeasuredColumns);
         }
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
