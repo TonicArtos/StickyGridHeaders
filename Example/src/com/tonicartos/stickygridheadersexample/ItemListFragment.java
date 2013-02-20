@@ -46,7 +46,7 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapt
  * <p>
  * Activities containing this fragment MUST implement the {@link Callbacks}
  * interface.
- *
+ * 
  * @author Tonic Artos
  */
 public class ItemListFragment extends SherlockFragment implements OnItemClickListener {
@@ -137,8 +137,13 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
         mGridView = (GridView) view.findViewById(R.id.asset_grid);
         mGridView.setOnItemClickListener(this);
-        mGridView.setColumnWidth((int) calculatePixelsFromDips(100));
-        mGridView.setNumColumns(-1);
+
+        /*
+         * Currently set in the XML layout, but this is how you would do it in
+         * your code.
+         */
+        // mGridView.setColumnWidth((int) calculatePixelsFromDips(100));
+        // mGridView.setNumColumns(StickyGridHeadersGridView.AUTO_FIT);
         mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
 
         if (savedInstanceState != null) {

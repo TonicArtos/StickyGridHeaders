@@ -173,7 +173,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (!mClipToPaddingHasBeenSet) {
             mClippingToPadding = true;
         }
-        
 
         StickyGridHeadersBaseAdapter baseAdapter;
         if (adapter instanceof StickyGridHeadersBaseAdapter) {
