@@ -465,14 +465,12 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 numFittedColumns = 2;
             }
             mNumMeasuredColumns = numFittedColumns;
-            mAdapter.setNumColumns(numFittedColumns);
         } else {
             // There were some number of columns requested so we will try to
             // fulfil the request.
             mNumMeasuredColumns = mNumColumns;
-            mAdapter.setNumColumns(mNumMeasuredColumns);
         }
-
+        if (mAdapter != null) mAdapter.setNumColumns(mNumMeasuredColumns);
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
