@@ -99,11 +99,13 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
         @Override
         public void onChanged() {
             mHeaders = generateHeaderList(mDelegate);
+            notifyDataSetChanged();
         }
 
         @Override
         public void onInvalidated() {
             mHeaders.clear();
+            notifyDataSetInvalidated();
         }
     }
 
