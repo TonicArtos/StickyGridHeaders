@@ -245,6 +245,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         super.setOnItemSelectedListener(this);
     }
 
+    @Override
+    public void setOnScrollListener(OnScrollListener listener) {
+        this.mScrollListener = listener;
+    }
+
     private int getHeaderHeight() {
         if (mStickiedHeader != null) {
             return mStickiedHeader.getMeasuredHeight();
