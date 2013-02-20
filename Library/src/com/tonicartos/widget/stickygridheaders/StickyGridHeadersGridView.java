@@ -46,7 +46,7 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapp
 /**
  * GridView that displays items in sections with headers that stick to the top
  * of the view.
- *
+ * 
  * @author Tonic Artos, Emil Sjölander
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener, OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
@@ -429,25 +429,36 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         if (mNumColumns == AUTO_FIT) {
-            int gridWidth = Math.max(MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight(), 0);
-            int measuredColumns = gridWidth / mColumnWidth;
-            if (measuredColumns > 0) {
-				mNumMeasuredColumns = measuredColumns;
-	            while (mNumMeasuredColumns != 1) {
-	                if (mNumMeasuredColumns * mColumnWidth + (mNumMeasuredColumns - 1) * mHorizontalSpacing > gridWidth) {
-	                    mNumMeasuredColumns--;
-	                } else {
-	                    break;
-	                }
-	            }
-	            mAdapter.setNumColumns(mNumMeasuredColumns);
+            int numFittedColumns;
+            if (mColumnWidth > 0) {
+                int gridWidth = Math.max(MeasureSpec.getSize(widthMeasureSpec) - getPaddingLeft() - getPaddingRight(), 0);
+                numFittedColumns = gridWidth / mColumnWidth;
+                // Calculate measured columns accounting for requested grid
+                // spacing.
+                if (numFittedColumns > 0) {
+                    while (numFittedColumns != 1) {
+                        if (numFittedColumns * mColumnWidth + (numFittedColumns - 1) * mHorizontalSpacing > gridWidth) {
+                            numFittedColumns--;
+                        } else {
+                            break;
+                        }
+                    }
+                } else {
+                    // Could not fit any columns in grid width, so default to a
+                    // single column.
+                    numFittedColumns = 1;
+                }
+            } else {
+                // Mimic vanilla GridView behaviour where there is not enough
+                // information to auto-fit columns.
+                numFittedColumns = 2;
             }
-            else {
-				mNumMeasuredColumns = 1;
-            	mAdapter.setNumColumns(1);
-            }
+            mNumMeasuredColumns = numFittedColumns;
+            mAdapter.setNumColumns(numFittedColumns);
         } else {
-        	mNumMeasuredColumns = mNumColumns;
+            // There were some number of columns requested so we will try to
+            // fulfil the request.
+            mNumMeasuredColumns = mNumColumns;
             mAdapter.setNumColumns(mNumMeasuredColumns);
         }
 
