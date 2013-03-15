@@ -30,7 +30,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -41,6 +40,7 @@ import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * A list fragment representing a list of Items. This fragment also supports
@@ -89,6 +89,8 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
     private Menu mMenu;
 
+    private Toast mToast;
+
     /**
      * Mandatory empty constructor for the fragment manager to instantiate the
      * fragment (e.g. upon screen orientation changes).
@@ -131,14 +133,24 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
 
     @Override
     public void onHeaderClick(AdapterView<?> parent, View view, long id) {
-        Log.d("asdf",
-                "clicked " + id + " " + ((TextView)view.findViewById(android.R.id.text1)).getText());
+        String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText() + " was tapped.";
+        if (mToast == null) {
+            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+        } else {
+            mToast.setText(text);
+        }
+        mToast.show();
     }
 
     @Override
     public boolean onHeaderLongClick(AdapterView<?> parent, View view, long id) {
-        Log.d("asdf",
-                "long pressed " + id + " " + ((TextView)view.findViewById(android.R.id.text1)).getText());
+        String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText() + " was long pressed.";
+        if (mToast == null) {
+            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+        } else {
+            mToast.setText(text);
+        }
+        mToast.show();
         return true;
     }
 
