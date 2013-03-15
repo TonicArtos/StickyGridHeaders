@@ -30,7 +30,6 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
@@ -249,7 +248,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 mTouchMode = TOUCH_MODE_DOWN;
                 return true;
             case MotionEvent.ACTION_MOVE:
-                if (Math.abs(ev.getY() - mMotionY) > mTouchSlop) {
+                if (mMotionHeaderPosition != NO_MATCHED_HEADER && Math.abs(ev.getY() - mMotionY) > mTouchSlop) {
                     // Detected scroll initiation so cancel touch completion on
                     // header.
                     mTouchMode = TOUCH_MODE_REST;
@@ -295,8 +294,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
                         if (!mDataChanged) {
                             // Got here so must be a tap. The long press would
-                            // have
-                            // trigger on the callback handler. Probably.
+                            // have trigger on the callback handler. Probably.
                             mTouchMode = TOUCH_MODE_TAP;
                             header.setPressed(true);
                             setPressed(true);
@@ -326,7 +324,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 mTouchMode = TOUCH_MODE_REST;
                 return true;
         }
-        Log.d("asdf", ev.getAction() + "");
         return super.onTouchEvent(ev);
     }
 
