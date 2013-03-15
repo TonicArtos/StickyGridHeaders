@@ -16,11 +16,21 @@
 
 package com.tonicartos.stickygridheadersexample;
 
+import com.actionbarsherlock.app.SherlockFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderClickListener;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderLongClickListener;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapter;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.util.Log;
 import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +40,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.GridView;
 import android.widget.ListView;
-
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapter;
+import android.widget.TextView;
 
 /**
  * A list fragment representing a list of Items. This fragment also supports
@@ -49,7 +53,9 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapt
  * 
  * @author Tonic Artos
  */
-public class ItemListFragment extends SherlockFragment implements OnItemClickListener {
+@SuppressLint("NewApi")
+public class ItemListFragment extends SherlockFragment implements OnItemClickListener,
+        OnHeaderClickListener, OnHeaderLongClickListener {
     private static final String KEY_LIST_POSITION = "key_list_position";
 
     /**
@@ -67,19 +73,19 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
-    private int mFirstVisible;
-    private GridView mGridView;
-
     /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
-
     /**
      * The fragment's current callback object, which is notified of list item
      * clicks.
      */
     private Callbacks mCallbacks = sDummyCallbacks;
+
+    private int mFirstVisible;
+
+    private GridView mGridView;
 
     private Menu mMenu;
 
@@ -99,7 +105,15 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
             throw new IllegalStateException("Activity must implement fragment's callbacks.");
         }
 
-        mCallbacks = (Callbacks) activity;
+        mCallbacks = (Callbacks)activity;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_item_list, menu);
+        mMenu = menu;
+        menu.findItem(R.id.menu_toggle_sticky).setChecked(
+                ((StickyGridHeadersGridView)mGridView).areHeadersSticky());
     }
 
     @Override
@@ -116,10 +130,55 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     }
 
     @Override
+    public void onHeaderClick(AdapterView<?> parent, View view, long id) {
+        Log.d("asdf",
+                "clicked " + id + " " + ((TextView)view.findViewById(android.R.id.text1)).getText());
+    }
+
+    @Override
+    public boolean onHeaderLongClick(AdapterView<?> parent, View view, long id) {
+        Log.d("asdf",
+                "long pressed " + id + " " + ((TextView)view.findViewById(android.R.id.text1)).getText());
+        return true;
+    }
+
+    @Override
     public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
         // Notify the active callbacks interface (the activity, if the
         // fragment is attached to one) that an item has been selected.
         mCallbacks.onItemSelected(position);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.menu_toggle_sticky:
+                item.setChecked(!item.isChecked());
+                ((StickyGridHeadersGridView)mGridView)
+                        .setAreHeadersSticky(!((StickyGridHeadersGridView)mGridView)
+                                .areHeadersSticky());
+
+                return true;
+            case R.id.menu_use_list_adapter:
+                mGridView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item,
+                        getResources().getStringArray(R.array.countries)));
+                mMenu.findItem(R.id.menu_use_list_adapter).setVisible(false);
+                mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(true);
+                mMenu.findItem(R.id.menu_toggle_sticky).setVisible(false);
+                return true;
+            case R.id.menu_use_sticky_adapter:
+                mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity()
+                        .getApplicationContext(), getResources().getStringArray(R.array.countries),
+                        R.layout.header, R.layout.item));
+                mMenu.findItem(R.id.menu_use_list_adapter).setVisible(true);
+                mMenu.findItem(R.id.menu_toggle_sticky).setVisible(true);
+                mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(false);
+                return true;
+
+            default:
+                break;
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -135,7 +194,7 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mGridView = (GridView) view.findViewById(R.id.asset_grid);
+        mGridView = (GridView)view.findViewById(R.id.asset_grid);
         mGridView.setOnItemClickListener(this);
 
         /*
@@ -144,7 +203,9 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
          */
         // mGridView.setColumnWidth((int) calculatePixelsFromDips(100));
         // mGridView.setNumColumns(StickyGridHeadersGridView.AUTO_FIT);
-        mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
+        mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity()
+                .getApplicationContext(), getResources().getStringArray(R.array.countries),
+                R.layout.header, R.layout.item));
 
         if (savedInstanceState != null) {
             mFirstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
@@ -157,46 +218,10 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
 
+        ((StickyGridHeadersGridView)mGridView).setOnHeaderClickListener(this);
+        ((StickyGridHeadersGridView)mGridView).setOnHeaderLongClickListener(this);
+
         setHasOptionsMenu(true);
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-        case R.id.menu_toggle_sticky:
-            item.setChecked(!item.isChecked());
-            ((StickyGridHeadersGridView) mGridView).setAreHeadersSticky(!((StickyGridHeadersGridView) mGridView).areHeadersSticky());
-
-            return true;
-        case R.id.menu_use_list_adapter:
-            mGridView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item, getResources().getStringArray(R.array.countries)));
-            mMenu.findItem(R.id.menu_use_list_adapter).setVisible(false);
-            mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(true);
-            mMenu.findItem(R.id.menu_toggle_sticky).setVisible(false);
-            return true;
-        case R.id.menu_use_sticky_adapter:
-            mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity().getApplicationContext(), getResources().getStringArray(R.array.countries), R.layout.header, R.layout.item));
-            mMenu.findItem(R.id.menu_use_list_adapter).setVisible(true);
-            mMenu.findItem(R.id.menu_toggle_sticky).setVisible(true);
-            mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(false);
-            return true;
-
-        default:
-            break;
-        }
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
-        inflater.inflate(R.menu.fragment_item_list, menu);
-        mMenu = menu;
-        menu.findItem(R.id.menu_toggle_sticky)
-            .setChecked(((StickyGridHeadersGridView) mGridView).areHeadersSticky());
-    }
-
-    private float calculatePixelsFromDips(float dips) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, getResources().getDisplayMetrics());
     }
 
     /**
@@ -209,8 +234,14 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
         // give items the 'activated' state when touched.
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-            mGridView.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE : ListView.CHOICE_MODE_NONE);
+            mGridView.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
+                    : ListView.CHOICE_MODE_NONE);
         }
+    }
+
+    private float calculatePixelsFromDips(float dips) {
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, getResources()
+                .getDisplayMetrics());
     }
 
     @SuppressLint("NewApi")
