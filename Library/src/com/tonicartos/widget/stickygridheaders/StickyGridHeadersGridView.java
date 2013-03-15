@@ -134,6 +134,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 mAreHeadersSticky = a.getBoolean(attr, true);
             }
         }
+        a.recycle();
 
         ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
