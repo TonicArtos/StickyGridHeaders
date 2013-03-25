@@ -45,6 +45,7 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -103,8 +104,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private OnScrollListener mScrollListener;
     private int mScrollState = SCROLL_STATE_IDLE;
     private View mStickiedHeader;
+    private Toast mToast;
     private Runnable mTouchModeReset;
     private int mTouchSlop;
+    private int mVerticalSpacing;
     protected StickyGridHeadersBaseAdapterWrapper mAdapter;
     protected boolean mDataChanged;
     protected int mMotionHeaderPosition;
@@ -249,7 +252,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 mTouchMode = TOUCH_MODE_DOWN;
                 return true;
             case MotionEvent.ACTION_MOVE:
-                if (mMotionHeaderPosition != NO_MATCHED_HEADER && Math.abs(ev.getY() - mMotionY) > mTouchSlop) {
+                if (mMotionHeaderPosition != NO_MATCHED_HEADER
+                        && Math.abs(ev.getY() - mMotionY) > mTouchSlop) {
                     // Detected scroll initiation so cancel touch completion on
                     // header.
                     mTouchMode = TOUCH_MODE_REST;
@@ -452,6 +456,12 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         this.mScrollListener = listener;
     }
 
+    @Override
+    public void setVerticalSpacing(int verticalSpacing) {
+        super.setVerticalSpacing(verticalSpacing);
+        mVerticalSpacing = verticalSpacing;
+    }
+
     private int findMotionHeader(float y) {
         if (mStickiedHeader != null && y <= mStickiedHeader.getBottom()) {
             return MATCHED_STICKIED_HEADER;
@@ -524,9 +534,42 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             return;
         }
 
-        long newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+        long newHeaderId;
+        int selectedHeaderPosition = firstVisibleItem;
+
+        int beforeRowPosition = firstVisibleItem - mNumMeasuredColumns;
+        if (beforeRowPosition < 0) {
+            beforeRowPosition = firstVisibleItem;
+        }
+
+        int secondRowPosition = firstVisibleItem + mNumMeasuredColumns;
+        if (secondRowPosition >= mAdapter.getCount()) {
+            secondRowPosition = firstVisibleItem;
+        }
+
+        if (mVerticalSpacing == 0) {
+            newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+        } else if (mVerticalSpacing < 0) {
+            newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+            View firstSecondRowView = getChildAt(mNumMeasuredColumns);
+            if (firstSecondRowView.getTop() <= 0) {
+                newHeaderId = mAdapter.getHeaderId(secondRowPosition);
+                selectedHeaderPosition = secondRowPosition;
+            } else {
+                newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+            }
+        } else {
+            int margin = getChildAt(0).getTop();
+            if (0 < margin && margin < mVerticalSpacing) {
+                newHeaderId = mAdapter.getHeaderId(beforeRowPosition);
+                selectedHeaderPosition = beforeRowPosition;
+            } else {
+                newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
+            }
+        }
+
         if (mCurrentHeaderId != newHeaderId) {
-            mStickiedHeader = mAdapter.getHeaderView(firstVisibleItem, mStickiedHeader, this);
+            mStickiedHeader = mAdapter.getHeaderView(selectedHeaderPosition, mStickiedHeader, this);
             measureHeader();
         }
         mCurrentHeaderId = newHeaderId;
@@ -586,6 +629,20 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 }
             }
         }
+    }
+
+    /**
+     * Use for interactive debugging on screen.
+     * 
+     * @param text Text to toast to see exactly what is happening where.
+     */
+    private void showToast(String text) {
+        if (mToast == null) {
+            mToast = Toast.makeText(getContext(), text, Toast.LENGTH_SHORT);
+        } else {
+            mToast.setText(text);
+        }
+        mToast.show();
     }
 
     @Override
