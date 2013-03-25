@@ -75,7 +75,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private boolean mClipToPaddingHasBeenSet;
     private int mColumnWidth;
     private long mCurrentHeaderId = -1;
-    private DataSetObserver mDataSetChangedObserver = new DataSetObserver() {
+    private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
             reset();
@@ -374,6 +374,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     @Override
     public void setAdapter(ListAdapter adapter) {
+        if (mAdapter != null && mDataSetObserver != null) {
+            mAdapter.unregisterDataSetObserver(mDataSetObserver);
+        }
+
         if (!mClipToPaddingHasBeenSet) {
             mClippingToPadding = true;
         }
@@ -391,7 +395,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         this.mAdapter = new StickyGridHeadersBaseAdapterWrapper(getContext(), this, baseAdapter);
-        this.mAdapter.registerDataSetObserver(mDataSetChangedObserver);
+        this.mAdapter.registerDataSetObserver(mDataSetObserver);
         reset();
         super.setAdapter(this.mAdapter);
     }
@@ -533,8 +537,9 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private void reset() {
         mHeaderBottomPosition = 0;
         mStickiedHeader = null;
+        mCurrentHeaderId = INVALID_ROW_ID;
     }
-
+    
     private void scrollChanged(int firstVisibleItem) {
         if (mAdapter == null || mAdapter.getCount() == 0 || !mAreHeadersSticky) {
             return;
