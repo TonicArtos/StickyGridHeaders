@@ -90,9 +90,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private int mHorizontalSpacing;
     private float mMotionY;
-    private int mNumColumns; // Must be set from the wrapped GridView in the
+    /**
+     * Must be set from the wrapped GridView in the constructor.
+     */
+    private int mNumColumns;
     private boolean mNumColumnsSet;
-    // constructor.
     private int mNumMeasuredColumns = 1;
     private OnHeaderClickListener mOnHeaderClickListener;
     private OnHeaderLongClickListener mOnHeaderLongClickListener;
@@ -165,6 +167,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         } catch (Exception e) {
         }
         return null;
+    }
+
+    /**
+     * Get the currently stickied header.
+     * 
+     * @return Current stickied header.
+     */
+    public View getStickiedHeader() {
+        return mStickiedHeader;
     }
 
     @Override
