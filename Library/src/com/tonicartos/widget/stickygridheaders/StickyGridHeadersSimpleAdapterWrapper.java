@@ -16,15 +16,15 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import android.database.DataSetObserver;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
@@ -104,7 +104,7 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
 
         @Override
         public void onInvalidated() {
-            mHeaders.clear();
+            mHeaders = generateHeaderList(mDelegate);
             notifyDataSetInvalidated();
         }
     }
