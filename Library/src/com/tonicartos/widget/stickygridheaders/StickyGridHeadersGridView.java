@@ -168,7 +168,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
         return null;
     }
-
+    
     /**
      * Get the currently stickied header.
      * 
@@ -793,7 +793,9 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (mAdapter != null) {
             mAdapter.setNumColumns(mNumMeasuredColumns);
         }
-
+        
+        measureHeader();
+        
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
