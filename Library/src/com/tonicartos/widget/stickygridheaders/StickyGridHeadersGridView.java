@@ -520,7 +520,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             return;
         }
 
-        int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
+        int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth() - getPaddingLeft() - getPaddingRight(), MeasureSpec.EXACTLY);
         int heightMeasureSpec = 0;
 
         ViewGroup.LayoutParams params = mStickiedHeader.getLayoutParams();
@@ -708,7 +708,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 return;
             }
 
-            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY);
+            int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(), MeasureSpec.EXACTLY - getPaddingLeft() - getPaddingRight());
             int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
             header.measure(widthMeasureSpec, heightMeasureSpec);
             header.layout(getLeft() + getPaddingLeft(), 0, getRight() - getPaddingRight(),
