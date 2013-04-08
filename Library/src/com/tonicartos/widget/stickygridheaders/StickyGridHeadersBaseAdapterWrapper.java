@@ -47,7 +47,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     protected static final int VIEW_TYPE_FILLER = 0x00;
     protected static final int VIEW_TYPE_HEADER = 0x01;
 
-    public final StickyGridHeadersBaseAdapter mDelegate;
+    private final StickyGridHeadersBaseAdapter mDelegate;
 
     private final Context mContext;
     private int mCount;
@@ -197,6 +197,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             initRowSiblings(mNumColumns);
         }
         return container;
+    }
+
+    /**
+     * @return the adapter wrapped by this adapter.
+     */
+    public StickyGridHeadersBaseAdapter getWrappedAdapter(){
+        return mDelegate;
     }
 
     @Override
