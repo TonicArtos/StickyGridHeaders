@@ -145,7 +145,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         if (adapterPosition.mPosition == POSITION_FILLER) {
             return VIEW_TYPE_FILLER;
         }
-        return mDelegate.getItemViewType(adapterPosition.mPosition) + sNumViewTypes;
+        int itemViewType = mDelegate.getItemViewType(adapterPosition.mPosition);
+        if (itemViewType == IGNORE_ITEM_VIEW_TYPE) {
+            return itemViewType;
+        }
+        return itemViewType + sNumViewTypes;
     }
 
     @Override
