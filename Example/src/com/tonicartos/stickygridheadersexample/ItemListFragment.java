@@ -30,7 +30,6 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -248,11 +247,6 @@ public class ItemListFragment extends SherlockFragment implements OnItemClickLis
             mGridView.setChoiceMode(activateOnItemClick ? ListView.CHOICE_MODE_SINGLE
                     : ListView.CHOICE_MODE_NONE);
         }
-    }
-
-    private float calculatePixelsFromDips(float dips) {
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dips, getResources()
-                .getDisplayMetrics());
     }
 
     @SuppressLint("NewApi")

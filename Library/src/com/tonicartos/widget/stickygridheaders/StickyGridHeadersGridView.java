@@ -16,7 +16,6 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
-import com.tonicartos.stickygridheaders.R;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.ReferenceView;
 
@@ -44,7 +43,6 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -105,7 +103,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     private OnScrollListener mScrollListener;
     private int mScrollState = SCROLL_STATE_IDLE;
     private View mStickiedHeader;
-    private Toast mToast;
     private Runnable mTouchModeReset;
     private int mTouchSlop;
     private int mVerticalSpacing;
@@ -636,20 +633,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 }
             }
         }
-    }
-
-    /**
-     * Use for interactive debugging on screen.
-     * 
-     * @param text Text to toast to see exactly what is happening where.
-     */
-    private void showToast(String text) {
-        if (mToast == null) {
-            mToast = Toast.makeText(getContext(), text, Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(text);
-        }
-        mToast.show();
     }
 
     @Override
