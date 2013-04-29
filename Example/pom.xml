@@ -27,7 +27,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>stickygridheaders</artifactId>
             <version>${project.version}</version>
-            <type>apklib</type>
         </dependency>
         <dependency>
             <groupId>com.actionbarsherlock</groupId>

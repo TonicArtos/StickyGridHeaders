@@ -53,7 +53,6 @@ import android.widget.Toast;
  * 
  * @author Tonic Artos
  */
-@SuppressLint("NewApi")
 public class ItemListFragment extends SherlockFragment implements OnItemClickListener,
         OnHeaderClickListener, OnHeaderLongClickListener {
     private static final String KEY_LIST_POSITION = "key_list_position";
