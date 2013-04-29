@@ -21,7 +21,6 @@ import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapp
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.ReferenceView;
 
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
 import android.graphics.Rect;
@@ -131,15 +130,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (!mNumColumnsSet) {
             mNumColumns = AUTO_FIT;
         }
-
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.StickyGridHeadersGridView);
-        for (int i = 0; i < a.getIndexCount(); i++) {
-            final int attr = a.getIndex(i);
-            if (attr == R.styleable.StickyGridHeadersGridView_areHeadersSticky) {
-                mAreHeadersSticky = a.getBoolean(attr, true);
-            }
-        }
-        a.recycle();
 
         ViewConfiguration vc = ViewConfiguration.get(context);
         mTouchSlop = vc.getScaledTouchSlop();
