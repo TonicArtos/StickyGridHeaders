@@ -12,6 +12,9 @@ inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeade
 
 ## Usage
 
+Sticky Grid Headers can be added to your project as an Android Library
+Project, a Jar library, or using Maven.
+
 `StickyGridHeadersGridView` replaces the use of a `GridView` in your
 application and is used in the same manner. To get all the functionality your
 `ListAdapter` must implement one of either `StickyGridHeadersBaseAdapter` or
@@ -19,16 +22,6 @@ application and is used in the same manner. To get all the functionality your
 to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.
-
-StickyGridHeaders provides some custom XML attributes so you can customise
-`StickyGridHeadersGridView` in your XML layouts. To use the attributes you just
-need to add a custom namespace to your layout.
-```
-xmlns:app="http://schemas.android.com/apk/res-auto"
-```
-To see a list of the current attributes provided, refer to 
-[attrs.xml](Library/res/values/attrs.xml).
-
 
 ## Compatibility
 
