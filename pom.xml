@@ -18,10 +18,22 @@
     <name>StickyGridHeaders (Parent)</name>
     <description>StickyGridHeaders is an Android library that provides a GridView that shows items in sections with headers</description>
     <url>https://github.com/TonicArtos/StickyGridHeaders</url>
+
     <modules>
         <module>Library</module>
         <module>Example</module>
     </modules>
+
+    <scm>
+        <url>https://github.com/TonicArtos/StickyGridHeaders</url>
+        <connection>scm:git:git://github.com/TonicArtos/StickyGridHeaders.git</connection>
+        <developerConnection>scm:git:git@github.com:TonicArtos/StickyGridHeaders.git</developerConnection>
+    </scm>
+
+    <issueManagement>
+        <system>GitHub Issues</system>
+        <url>https://github.com/TonicArtos/StickyGridHeaders/issues</url>
+    </issueManagement>
 
     <licenses>
         <license>
@@ -43,6 +55,7 @@
         <!-- OTHER -->
         <java.version>1.6</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     </properties>
 
     <dependencyManagement>
