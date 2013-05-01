@@ -9,6 +9,15 @@ row.
 StickyGridHeaders has been designed to be adapter compatible with, and was
 inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeaders).
 
+## Roadmap
+
+StickyGridHeaders is moving towards a version 1.0 release, whereupon it will be
+made available on a Maven repository. There is also a plan for a 2.0 version
+which will address the outstanding view heirarchy issue.
+
+If there are any outstanding issues please add them to the Issue Tracker.
+
+The 1.0 release is currently planned for May 11, 2013 (NZST).
 
 ## Usage
 
