@@ -111,6 +111,7 @@ public class StickyGridHeadersGridView extends GridView implements
     protected boolean mDataChanged;
     protected int mMotionHeaderPosition;
     protected int mTouchMode;
+    private boolean mMaskStickyHeaderRegion = true;
 
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
@@ -165,6 +166,10 @@ public class StickyGridHeadersGridView extends GridView implements
      */
     public View getStickiedHeader() {
         return mStickiedHeader;
+    }
+
+    public boolean getStickyHeaderIsTranscluent() {
+        return !mMaskStickyHeaderRegion;
     }
 
     @Override
@@ -471,6 +476,10 @@ public class StickyGridHeadersGridView extends GridView implements
         this.mScrollListener = listener;
     }
 
+    public void setStickyHeaderIsTranscluent(boolean isTranscluent) {
+        mMaskStickyHeaderRegion = !isTranscluent;
+    }
+
     @Override
     public void setVerticalSpacing(int verticalSpacing) {
         super.setVerticalSpacing(verticalSpacing);
@@ -658,15 +667,15 @@ public class StickyGridHeadersGridView extends GridView implements
             scrollChanged(getFirstVisiblePosition());
         }
 
-        // Mask the region where we will draw the header later, but only if we
-        // will draw a header.
         boolean willDrawStickiedHeader = mStickiedHeader != null
                 && mAreHeadersSticky
                 && mStickiedHeader.getVisibility() == View.VISIBLE;
         int headerHeight = getHeaderHeight();
         int top = mHeaderBottomPosition - headerHeight;
 
-        if (willDrawStickiedHeader) {
+        // Mask the region where we will draw the header later, but only if we
+        // will draw a header and masking is requested.
+        if (willDrawStickiedHeader && mMaskStickyHeaderRegion) {
             mClippingRect.left = getPaddingLeft();
             mClippingRect.right = getWidth() - getPaddingRight();
             mClippingRect.top = mHeaderBottomPosition;
@@ -722,9 +731,9 @@ public class StickyGridHeadersGridView extends GridView implements
             canvas.restore();
         }
 
-        if (willDrawStickiedHeader) {
+        if (willDrawStickiedHeader && mMaskStickyHeaderRegion) {
             canvas.restore();
-        } else {
+        } else if (!willDrawStickiedHeader) {
             // Done.
             return;
         }
