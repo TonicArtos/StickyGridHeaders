@@ -11,8 +11,8 @@ inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeade
 
 ## Roadmap
 
-Version 1.0 has been released. You can check out the `1.0` tag on the `stable` branch
-to get this release, or simply check out `stable` to track the stable releases.
+Version 1.0 has been released! The release is tagged as `1.0` and this and all future
+releases can be cleanly tracked on the `stable` branch.
 
 Development on `master` will now focus on bringing the headers into the view hierarchy
 and resolving dpad navigation issues.
@@ -29,6 +29,23 @@ application and is used in the same manner. To get all the functionality your
 to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.
+
+### Including in your Project
+
+This library can be used as a `.jar` file included in the `libs/` directory of your
+project. The latest version is available from 
+[Google Drive](https://docs.google.com/file/d/0B5I7vIqOHIjZQW9rcFFRdWtwYk0/edit?usp=sharing).
+
+For Maven users, StickyGridHeaders can now be easily included by specifying it as
+a dependency:
+
+```
+<dependency>
+  <groupId>com.tonicartos</groupId>
+  <artifactId>stickygridheaders</artifactId>
+  <version>1.0</version>
+</dependency>
+```
 
 ## Compatibility
 
