@@ -643,7 +643,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         // Mask the region where we will draw the header later, but only if we
         // will draw a header.
-        boolean willDrawStickiedHeader = mStickiedHeader != null && mAreHeadersSticky;
+        boolean willDrawStickiedHeader = mStickiedHeader != null && mAreHeadersSticky && mStickiedHeader.getVisibility() == View.VISIBLE;
         int headerHeight = getHeaderHeight();
         int top = mHeaderBottomPosition - headerHeight;
 
@@ -918,8 +918,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         @Override
         public String toString() {
             return "StickyGridHeadersGridView.SavedState{"
-                    + Integer.toHexString(System.identityHashCode(this)) + " areHeadersSticky="
-                    + areHeadersSticky + "}";
+                    + Integer.toHexString(System.identityHashCode(this))
+                    + " areHeadersSticky=" + areHeadersSticky + "}";
         }
 
         @Override
