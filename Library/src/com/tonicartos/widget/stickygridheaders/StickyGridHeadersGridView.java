@@ -111,6 +111,7 @@ public class StickyGridHeadersGridView extends GridView implements
     protected boolean mDataChanged;
     protected int mMotionHeaderPosition;
     protected int mTouchMode;
+    private boolean mMaskStickyHeaderRegion = true;
 
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
@@ -165,6 +166,10 @@ public class StickyGridHeadersGridView extends GridView implements
      */
     public View getStickiedHeader() {
         return mStickiedHeader;
+    }
+
+    public boolean getStickyHeaderIsTranscluent() {
+        return !mMaskStickyHeaderRegion;
     }
 
     @Override
@@ -471,6 +476,10 @@ public class StickyGridHeadersGridView extends GridView implements
         this.mScrollListener = listener;
     }
 
+    public void setStickyHeaderIsTranscluent(boolean isTranscluent) {
+        mMaskStickyHeaderRegion = !isTranscluent;
+    }
+
     @Override
     public void setVerticalSpacing(int verticalSpacing) {
         super.setVerticalSpacing(verticalSpacing);
@@ -591,8 +600,8 @@ public class StickyGridHeadersGridView extends GridView implements
             mStickiedHeader = mAdapter.getHeaderView(selectedHeaderPosition,
                     mStickiedHeader, this);
             measureHeader();
+            mCurrentHeaderId = newHeaderId;
         }
-        mCurrentHeaderId = newHeaderId;
 
         final int childCount = getChildCount();
         if (childCount != 0) {
@@ -658,15 +667,15 @@ public class StickyGridHeadersGridView extends GridView implements
             scrollChanged(getFirstVisiblePosition());
         }
 
-        // Mask the region where we will draw the header later, but only if we
-        // will draw a header.
-        boolean willDrawStickiedHeader = mStickiedHeader != null
+        boolean drawStickiedHeader = mStickiedHeader != null
                 && mAreHeadersSticky
                 && mStickiedHeader.getVisibility() == View.VISIBLE;
         int headerHeight = getHeaderHeight();
         int top = mHeaderBottomPosition - headerHeight;
 
-        if (willDrawStickiedHeader) {
+        // Mask the region where we will draw the header later, but only if we
+        // will draw a header and masking is requested.
+        if (drawStickiedHeader && mMaskStickyHeaderRegion) {
             mClippingRect.left = getPaddingLeft();
             mClippingRect.right = getWidth() - getPaddingRight();
             mClippingRect.top = mHeaderBottomPosition;
@@ -693,14 +702,18 @@ public class StickyGridHeadersGridView extends GridView implements
 
         // Draw headers in list.
         for (int i = 0; i < headerPositions.size(); i++) {
-            View frame = getChildAt(headerPositions.get(i));
+            ReferenceView frame = (ReferenceView)getChildAt(headerPositions
+                    .get(i));
             View header;
             try {
                 header = (View)frame.getTag();
             } catch (Exception e) {
                 return;
             }
-            if (header.getVisibility() != View.VISIBLE) {
+
+            boolean headerIsStickied = ((HeaderFillerView)frame.getChildAt(0))
+                    .getHeaderId() == mCurrentHeaderId && frame.getTop() <= 0;
+            if (header.getVisibility() != View.VISIBLE || headerIsStickied) {
                 continue;
             }
             int widthMeasureSpec = MeasureSpec.makeMeasureSpec(getWidth(),
@@ -722,9 +735,9 @@ public class StickyGridHeadersGridView extends GridView implements
             canvas.restore();
         }
 
-        if (willDrawStickiedHeader) {
+        if (drawStickiedHeader && mMaskStickyHeaderRegion) {
             canvas.restore();
-        } else {
+        } else if (!drawStickiedHeader) {
             // Done.
             return;
         }
