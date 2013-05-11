@@ -65,7 +65,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
     };
 
-    private StickyGridHeadersGridView mDridView;
+    private StickyGridHeadersGridView mGridView;
 
     private final List<View> mHeaderCache = new ArrayList<View>();
     private int mNumColumns = 1;
@@ -76,7 +76,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             StickyGridHeadersBaseAdapter delegate) {
         mContext = context;
         mDelegate = delegate;
-        mDridView = gridView;
+        mGridView = gridView;
         delegate.registerDataSetObserver(mDataSetObserver);
     }
 
@@ -270,7 +270,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             ViewGroup parent) {
         HeaderFillerView headerFillerView = (HeaderFillerView)convertView;
         headerFillerView = new HeaderFillerView(mContext);
-        headerFillerView.setHeaderWidth(mDridView.getWidth());
+        headerFillerView.setHeaderWidth(mGridView.getWidth());
 
         return headerFillerView;
     }
