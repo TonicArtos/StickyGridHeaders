@@ -99,6 +99,7 @@
                 <version>${maven.release.version}</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
+                    <pushChanges>false</pushChanges>
                 </configuration>
             </plugin>
         </plugins>
