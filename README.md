@@ -11,13 +11,11 @@ inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeade
 
 ## Roadmap
 
-StickyGridHeaders is moving towards a version 1.0 release, whereupon it will be
-made available on a Maven repository. There is also a plan for a 2.0 version
-which will address the outstanding view heirarchy issue.
+Version 1.0 has been released. You can check out the `1.0` tag on the `stable` branch
+to get this release, or simply check out `stable` to track the stable releases.
 
-If there are any outstanding issues please add them to the Issue Tracker.
-
-The 1.0 release is currently planned for May 11, 2013 (NZST).
+Development on `master` will now focus on bringing the headers into the view hierarchy
+and resolving dpad navigation issues.
 
 ## Usage
 
