@@ -167,7 +167,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         if (adapterPosition.mPosition == POSITION_HEADER) {
             View v = getHeaderFillerView(adapterPosition.mHeader, convertView,
                     parent);
-            ((HeaderFillerView)v).setId(position);
+            ((HeaderFillerView)v).setHeaderId(adapterPosition.mHeader);
             convertView = (View)v.getTag();
             View header = mDelegate.getHeaderView(adapterPosition.mHeader,
                     convertView, parent);
@@ -389,6 +389,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @author Tonic Artos
      */
     protected class HeaderFillerView extends FrameLayout {
+        private int mHeaderId;
         private int mHeaderWidth;
 
         public HeaderFillerView(Context context) {
@@ -402,6 +403,17 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         public HeaderFillerView(Context context, AttributeSet attrs,
                 int defStyle) {
             super(context, attrs, defStyle);
+        }
+        
+        public int getHeaderId() {
+            return mHeaderId;
+        }
+
+        /**
+         * Set the adapter id for this header so we can easily pull it later.
+         */
+        public void setHeaderId(int headerId) {
+            mHeaderId = headerId;
         }
 
         public void setHeaderWidth(int width) {
