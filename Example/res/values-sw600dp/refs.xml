@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <item name="activity_item_list" type="layout">@layout/activity_item_twopane</item>
+
+</resources>

@@ -4,17 +4,21 @@
 
 # files for the dex VM
 *.dex
-
 # Java class files
 *.class
-
 # generated files
 bin/
 gen/
-
 # Local configuration file (sdk path, etc)
 local.properties
-
 # Eclipse project files
 .classpath
 .project
+.settings
+Screenshots
+#IntelliJ
+.idea/
+*.iml
+target/
+gen-external-apklibs/
+

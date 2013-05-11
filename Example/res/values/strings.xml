@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">StickyGridHeaders Example</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="menu_toggle_sticky">Sticky Headers</string>
+</resources>
