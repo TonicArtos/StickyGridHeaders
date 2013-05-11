@@ -712,7 +712,9 @@ public class StickyGridHeadersGridView extends GridView implements
             }
 
             boolean headerIsStickied = ((HeaderFillerView)frame.getChildAt(0))
-                    .getHeaderId() == mCurrentHeaderId && frame.getTop() <= 0;
+                    .getHeaderId() == mCurrentHeaderId
+                    && frame.getTop() <= 0
+                    && mAreHeadersSticky;
             if (header.getVisibility() != View.VISIBLE || headerIsStickied) {
                 continue;
             }
