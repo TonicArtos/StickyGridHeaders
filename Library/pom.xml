@@ -4,7 +4,7 @@
     <parent>
         <artifactId>stickygridheader-parent</artifactId>
         <groupId>com.tonicartos</groupId>
-        <version>1.0.1-SNAPSHOT</version>
+        <version>1.0.1</version>
     </parent>
     <artifactId>stickygridheaders</artifactId>
     <name>StickyGridHeaders</name>
