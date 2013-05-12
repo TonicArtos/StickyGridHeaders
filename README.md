@@ -11,8 +11,7 @@ inspired by, [StickyListHeaders](http://github.com/emilsjolander/StickyListHeade
 
 ## Roadmap
 
-Version 1.0 has been released! The release is tagged as `1.0` and this and all future
-releases can be cleanly tracked on the `stable` branch.
+Version 1.0.1 has been released!
 
 Development on `master` will now focus on bringing the headers into the view hierarchy
 and resolving dpad navigation issues.
@@ -43,7 +42,7 @@ a dependency:
 <dependency>
   <groupId>com.tonicartos</groupId>
   <artifactId>stickygridheaders</artifactId>
-  <version>1.0</version>
+  <version>1.0.1</version>
 </dependency>
 ```
 
