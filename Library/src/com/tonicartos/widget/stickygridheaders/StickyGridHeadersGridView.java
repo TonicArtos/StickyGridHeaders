@@ -175,6 +175,10 @@ public class StickyGridHeadersGridView extends GridView implements
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position,
             long id) {
+    	if((view instanceof ReferenceView) && 
+    		((ReferenceView) view).getChildCount() > 0)
+    		view = ((ReferenceView) view).getChildAt(0);
+
         mOnItemClickListener.onItemClick(parent, view,
                 mAdapter.translatePosition(position).mPosition, id);
     }

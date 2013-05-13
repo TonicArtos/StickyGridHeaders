@@ -471,7 +471,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * 
      * @author Anton Spaans, Tonic Artos
      */
-    public class ReferenceView extends FrameLayout {
+    protected class ReferenceView extends FrameLayout {
         private boolean mForceMeasureDisabled;
         private int mNumColumns;
         private int mPosition;
