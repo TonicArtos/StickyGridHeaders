@@ -186,7 +186,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
         container.removeAllViews();
         container.addView(convertView);
-        
+
         container.setPosition(position);
         container.setNumColumns(mNumColumns);
 
