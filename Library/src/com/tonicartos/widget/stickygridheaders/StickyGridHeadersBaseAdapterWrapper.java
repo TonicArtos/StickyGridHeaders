@@ -181,7 +181,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
         container.removeAllViews();
         container.addView(convertView);
-
+        
         container.setPosition(position);
         container.setNumColumns(mNumColumns);
 
@@ -445,7 +445,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * 
      * @author Anton Spaans, Tonic Artos
      */
-    protected class ReferenceView extends FrameLayout {
+    public class ReferenceView extends FrameLayout {
         private boolean mForceMeasureDisabled;
         private int mNumColumns;
         private int mPosition;
