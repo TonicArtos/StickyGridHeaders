@@ -16,6 +16,10 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
@@ -26,10 +30,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
@@ -191,13 +191,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         container.setNumColumns(mNumColumns);
 
         mRowSiblings[position % mNumColumns] = container;
-        if (position % mNumColumns == 0) {
-            sCurrentlySizingRow = true;
-            for (int i = 1; i < mRowSiblings.length; i++) {
-                mRowSiblings[i] = getView(position + i, null, parent);
-            }
-            sCurrentlySizingRow = false;
-        }
 
         container.setRowSiblings(mRowSiblings);
         if (!sCurrentlySizingRow
@@ -563,7 +556,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
                 return;
             }
 
-            if (mPosition % mNumColumns == 0) {
+            if (mPosition % mNumColumns == (mNumColumns - 1)) {
                 forceRowMeasurement(widthMeasureSpec, heightMeasureSpec);
             }
 
