@@ -29,12 +29,14 @@ import java.util.Map;
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
  * add sections and headers.
- *
+ * 
  * @author Tonic Artos
  */
-public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
+public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implements
+        StickyGridHeadersBaseAdapter {
     private StickyGridHeadersSimpleAdapter mDelegate;
-    private List<HeaderData> mHeaders;
+
+    private HeaderData[] mHeaders;
 
     public StickyGridHeadersSimpleAdapterWrapper(StickyGridHeadersSimpleAdapter adapter) {
         mDelegate = adapter;
@@ -49,12 +51,12 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
 
     @Override
     public int getCountForHeader(int position) {
-        return mHeaders.get(position).getCount();
+        return mHeaders[position].getCount();
     }
 
     @Override
     public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return mDelegate.getHeaderView(mHeaders.get(position).getRefPosition(), convertView, parent);
+        return mDelegate.getHeaderView(mHeaders[position].getRefPosition(), convertView, parent);
     }
 
     @Override
@@ -69,7 +71,7 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
 
     @Override
     public int getNumHeaders() {
-        return mHeaders.size();
+        return mHeaders.length;
     }
 
     @Override
@@ -77,7 +79,7 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
         return mDelegate.getView(position, convertView, parent);
     }
 
-    protected List<HeaderData> generateHeaderList(StickyGridHeadersSimpleAdapter adapter) {
+    protected HeaderData[] generateHeaderList(StickyGridHeadersSimpleAdapter adapter) {
         Map<Long, HeaderData> mapping = new HashMap<Long, HeaderData>();
         List<HeaderData> headers = new ArrayList<HeaderData>();
 
@@ -92,7 +94,7 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
             mapping.put(headerId, headerData);
         }
 
-        return headers;
+        return headers.toArray(new HeaderData[headers.size()]);
     }
 
     private final class DataSetObserverExtension extends DataSetObserver {
@@ -111,6 +113,7 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
 
     private class HeaderData {
         private int mCount;
+
         private int mRefPosition;
 
         public HeaderData(int refPosition) {

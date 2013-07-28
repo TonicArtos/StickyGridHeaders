@@ -18,15 +18,11 @@ package com.tonicartos.widget.stickygridheaders;
 
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
@@ -70,20 +66,20 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
         @Override
         public void onInvalidated() {
-            mHeaderCache.clear();
+            mCounted = false;
             notifyDataSetInvalidated();
         }
     };
 
     private StickyGridHeadersGridView mGridView;
 
-    private final List<View> mHeaderCache = new ArrayList<View>();
-
     private int mNumColumns = 1;
 
     private View mLastViewSeen;
 
     private View mLastHeaderViewSeen;
+
+    private boolean mCounted = false;
 
     public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView,
             StickyGridHeadersBaseAdapter delegate) {
@@ -100,10 +96,15 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public int getCount() {
+        if (mCounted) {
+            return mCount;
+        }
         mCount = 0;
         int numHeaders = mDelegate.getNumHeaders();
         if (numHeaders == 0) {
-            return mDelegate.getCount();
+            mCount = mDelegate.getCount();
+            mCounted = true;
+            return mCount;
         }
 
         for (int i = 0; i < numHeaders; i++) {
@@ -111,6 +112,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             // group.
             mCount += mDelegate.getCountForHeader(i) + unFilledSpacesInHeaderGroup(i) + mNumColumns;
         }
+        mCounted = true;
         return mCount;
     }
 
@@ -232,6 +234,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
+        mCounted = false;
         // notifyDataSetChanged();
     }
 
@@ -340,12 +343,14 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         int numHeaders = mDelegate.getNumHeaders();
         if (numHeaders == 0) {
             mCount = mDelegate.getCount();
+            mCounted = true;
             return;
         }
 
         for (int i = 0; i < numHeaders; i++) {
             mCount += mDelegate.getCountForHeader(i) + mNumColumns;
         }
+        mCounted = true;
     }
 
     /**

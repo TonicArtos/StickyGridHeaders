@@ -640,7 +640,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     continue;
                 }
 
-                if (child instanceof HeaderFillerView && childDistance < watchingChildDistance) {
+                if (mAdapter.getItemId(getPositionForView(child)) == StickyGridHeadersBaseAdapterWrapper.ID_HEADER
+                        && childDistance < watchingChildDistance) {
                     viewToWatch = child;
                     watchingChildDistance = childDistance;
                 }
