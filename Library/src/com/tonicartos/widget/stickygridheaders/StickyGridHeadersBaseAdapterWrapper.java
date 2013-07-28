@@ -16,11 +16,10 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.database.DataSetObserver;
-import android.os.Build;
+import android.graphics.Canvas;
+import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +27,6 @@ import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -38,21 +36,25 @@ import java.util.List;
  * @author Tonic Artos
  */
 public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
-    private static boolean sCurrentlySizingRow;
-
-    private static final int sNumViewTypes = 2;
+    private static final int sNumViewTypes = 3;
 
     protected static final int ID_FILLER = -0x02;
 
     protected static final int ID_HEADER = -0x01;
 
+    protected static final int ID_HEADER_FILLER = -0x03;
+
     protected static final int POSITION_FILLER = -0x01;
 
     protected static final int POSITION_HEADER = -0x02;
 
+    protected static final int POSITION_HEADER_FILLER = -0x03;
+
     protected static final int VIEW_TYPE_FILLER = 0x00;
 
     protected static final int VIEW_TYPE_HEADER = 0x01;
+
+    protected static final int VIEW_TYPE_HEADER_FILLER = 0x02;
 
     private final StickyGridHeadersBaseAdapter mDelegate;
 
@@ -80,9 +82,9 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     private int mNumColumns = 1;
 
-    private View[] mRowSiblings;
+    private View mLastViewSeen;
 
-    private int[] mRowPos;
+    private View mLastHeaderViewSeen;
 
     public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView,
             StickyGridHeadersBaseAdapter delegate) {
@@ -146,6 +148,9 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         if (adapterPosition.mPosition == POSITION_FILLER) {
             return ID_FILLER;
         }
+        if (adapterPosition.mPosition == POSITION_HEADER_FILLER) {
+            return ID_HEADER_FILLER;
+        }
         return mDelegate.getItemId(adapterPosition.mPosition);
     }
 
@@ -158,6 +163,9 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         if (adapterPosition.mPosition == POSITION_FILLER) {
             return VIEW_TYPE_FILLER;
         }
+        if (adapterPosition.mPosition == POSITION_HEADER_FILLER) {
+            return VIEW_TYPE_HEADER_FILLER;
+        }
         int itemViewType = mDelegate.getItemViewType(adapterPosition.mPosition);
         if (itemViewType == IGNORE_ITEM_VIEW_TYPE) {
             return itemViewType;
@@ -167,56 +175,22 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
-        int currCol = position % mNumColumns;
-
-        // View may already be created as we create in blocks.
-        if (mRowPos[currCol] == position) {
-            return mRowSiblings[currCol];
-        }
-
-        ReferenceView container = null;
-        if (convertView instanceof ReferenceView) {
-            // Unpack from reference view;
-            container = (ReferenceView)convertView;
-            convertView = container.getChildAt(0);
-        }
-
         Position adapterPosition = translatePosition(position);
         if (adapterPosition.mPosition == POSITION_HEADER) {
-            View v = getHeaderFillerView(adapterPosition.mHeader, convertView, parent);
-            ((HeaderFillerView)v).setHeaderId(adapterPosition.mHeader);
-            convertView = (View)v.getTag();
-            View header = mDelegate.getHeaderView(adapterPosition.mHeader, convertView, parent);
-            v.setTag(header);
+            HeaderFillerView v = getHeaderFillerView(adapterPosition.mHeader, convertView, parent);
+            v.setTag(mDelegate.getHeaderView(adapterPosition.mHeader, (View)v.getTag(), parent));
             convertView = v;
+            mLastHeaderViewSeen = v;
+        } else if (adapterPosition.mPosition == POSITION_HEADER_FILLER) {
+            convertView = getFillerView(convertView, parent, mLastHeaderViewSeen);
         } else if (adapterPosition.mPosition == POSITION_FILLER) {
-            convertView = getFillerView(convertView, parent);
+            convertView = getFillerView(convertView, parent, mLastViewSeen);
         } else {
             convertView = mDelegate.getView(adapterPosition.mPosition, convertView, parent);
+            mLastViewSeen = convertView;
         }
 
-        // Wrap in reference view if not already.
-        if (container == null) {
-            container = new ReferenceView(mContext);
-        }
-        container.removeAllViews();
-        container.addView(convertView);
-
-        container.setPosition(position);
-        container.setNumColumns(mNumColumns);
-
-        // Create row in blocks.
-        mRowSiblings[currCol] = container;
-        if (currCol == 0) {
-            mRowPos[0] = position;
-            for (int col = 1; col < mRowSiblings.length; col++) {
-                mRowSiblings[col] = getView(position + col, null, parent);
-                mRowPos[col] = position + col;
-            }
-        }
-
-        container.setRowSiblings(mRowSiblings);
-        return container;
+        return convertView;
     }
 
     /**
@@ -259,7 +233,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     public void setNumColumns(int numColumns) {
         mNumColumns = numColumns;
-        initRowSiblings(numColumns);
         // notifyDataSetChanged();
     }
 
@@ -268,29 +241,26 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         mDelegate.unregisterDataSetObserver(observer);
     }
 
-    private FillerView getFillerView(View convertView, ViewGroup parent) {
+    private FillerView getFillerView(View convertView, ViewGroup parent, View lastViewSeen) {
         FillerView fillerView = (FillerView)convertView;
         if (fillerView == null) {
             fillerView = new FillerView(mContext);
         }
 
+        fillerView.setMeasureTarget(lastViewSeen);
+
         return fillerView;
     }
 
-    private View getHeaderFillerView(int headerPosition, View convertView, ViewGroup parent) {
+    private HeaderFillerView getHeaderFillerView(int headerPosition, View convertView,
+            ViewGroup parent) {
         HeaderFillerView headerFillerView = (HeaderFillerView)convertView;
-        headerFillerView = new HeaderFillerView(mContext);
-        headerFillerView.setHeaderWidth(mGridView.getWidth());
+        if (headerFillerView == null) {
+            headerFillerView = new HeaderFillerView(mContext);
+            headerFillerView.setHeaderWidth(mGridView.getWidth());
+        }
 
         return headerFillerView;
-    }
-
-    private void initRowSiblings(int numColumns) {
-        mRowSiblings = new View[numColumns];
-        Arrays.fill(mRowSiblings, null);
-
-        mRowPos = new int[numColumns];
-        Arrays.fill(mRowPos, -1);
     }
 
     /**
@@ -343,7 +313,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             place -= mNumColumns;
             if (place < 0) {
                 // Position is a fake so return null.
-                return new Position(POSITION_FILLER, i);
+                return new Position(POSITION_HEADER_FILLER, i);
             }
             adapterPosition -= mNumColumns;
 
@@ -355,6 +325,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             int filler = unFilledSpacesInHeaderGroup(i);
             adapterPosition -= filler;
             place -= sectionCount + filler;
+
+            if (place < 0) {
+                // Position is a fake so return null.
+                return new Position(POSITION_FILLER, i);
+            }
         }
 
         // Position is a fake.
@@ -380,8 +355,14 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @author Tonic Artos
      */
     protected class FillerView extends View {
+        private View mMeasureTarget;
+
         public FillerView(Context context) {
             super(context);
+        }
+
+        public void setMeasureTarget(View lastViewSeen) {
+            mMeasureTarget = lastViewSeen;
         }
 
         public FillerView(Context context, AttributeSet attrs) {
@@ -390,6 +371,20 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
         public FillerView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            // TODO Auto-generated method stub
+            super.onDraw(canvas);
+            canvas.drawColor(Color.BLUE);
+        }
+
+        @Override
+        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+            heightMeasureSpec = MeasureSpec.makeMeasureSpec(mMeasureTarget.getMeasuredHeight(),
+                    MeasureSpec.EXACTLY);
+            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
 
@@ -465,131 +460,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         protected Position(int position, int header) {
             mPosition = position;
             mHeader = header;
-        }
-    }
-
-    /**
-     * View to wrap adapter supplied views and ensure the row height is
-     * correctly measured for the contents of all cells in the row.
-     * <p>
-     * Some mickymousing is required with the adapter wrapper.
-     * <p>
-     * Adopted and modified from code first detailed at <a
-     * href="http://stackoverflow.com/a/13994344"
-     * >http://stackoverflow.com/a/13994344</a>
-     * 
-     * @author Anton Spaans, Tonic Artos
-     */
-    protected class ReferenceView extends FrameLayout {
-        private boolean mForceMeasureDisabled;
-
-        private int mNumColumns;
-
-        private int mPosition;
-
-        private View[] mRowSiblings;
-
-        public ReferenceView(Context context) {
-            super(context);
-        }
-
-        public ReferenceView(Context context, AttributeSet attrs) {
-            super(context, attrs);
-        }
-
-        @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-        public ReferenceView(Context context, AttributeSet attrs, int defStyle) {
-            super(context, attrs, defStyle);
-        }
-
-        @Override
-        public Object getTag() {
-            return getChildAt(0).getTag();
-        }
-
-        @Override
-        public Object getTag(int key) {
-            return getChildAt(0).getTag(key);
-        }
-
-        public View getView() {
-            return getChildAt(0);
-        }
-
-        public void setNumColumns(int numColumns) {
-            mNumColumns = numColumns;
-        }
-
-        public void setPosition(int position) {
-            mPosition = position;
-        }
-
-        @SuppressLint("NewApi")
-        public void setRowSiblings(View[] rowSiblings) {
-            mRowSiblings = rowSiblings;
-        }
-
-        @Override
-        public void setTag(int key, Object tag) {
-            getChildAt(0).setTag(key, tag);
-        }
-
-        @Override
-        public void setTag(Object tag) {
-            getChildAt(0).setTag(tag);
-        }
-
-        /**
-         * Forces measurement of entire row. Used to fix the case where the
-         * first item in a row has been measured determining the row height for
-         * scrolling upwards before any row siblings has been measured.
-         * 
-         * @param widthMeasureSpec
-         * @param heightMeasureSpec
-         */
-        private void forceRowMeasurement(int widthMeasureSpec, int heightMeasureSpec) {
-            if (mForceMeasureDisabled) {
-                return;
-            }
-
-            mForceMeasureDisabled = true;
-            for (View rowSibling : mRowSiblings) {
-                rowSibling.measure(widthMeasureSpec, heightMeasureSpec);
-            }
-            mForceMeasureDisabled = false;
-        }
-
-        @Override
-        protected LayoutParams generateDefaultLayoutParams() {
-            return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
-        }
-
-        @Override
-        protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-            if (mNumColumns == 1 || StickyGridHeadersBaseAdapterWrapper.this.mRowSiblings == null) {
-                return;
-            }
-
-            if (mPosition % mNumColumns == 0) {
-                forceRowMeasurement(widthMeasureSpec, heightMeasureSpec);
-            }
-
-            int measuredHeight = getMeasuredHeight();
-            int maxHeight = measuredHeight;
-            for (View rowSibling : mRowSiblings) {
-                if (rowSibling != null) {
-                    maxHeight = Math.max(maxHeight, rowSibling.getMeasuredHeight());
-                }
-            }
-
-            if (maxHeight == measuredHeight) {
-                return;
-            }
-
-            heightMeasureSpec = MeasureSpec.makeMeasureSpec(maxHeight, MeasureSpec.EXACTLY);
-            super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         }
     }
 }
