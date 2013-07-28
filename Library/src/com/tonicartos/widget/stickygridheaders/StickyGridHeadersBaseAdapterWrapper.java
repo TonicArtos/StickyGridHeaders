@@ -19,7 +19,6 @@ package com.tonicartos.widget.stickygridheaders;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.View;
 import android.view.ViewGroup;
@@ -371,13 +370,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
         public FillerView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
-        }
-
-        @Override
-        protected void onDraw(Canvas canvas) {
-            // TODO Auto-generated method stub
-            super.onDraw(canvas);
-            canvas.drawColor(Color.BLUE);
         }
 
         @Override
