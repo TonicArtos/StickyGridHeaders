@@ -16,10 +16,6 @@
 
 package com.tonicartos.stickygridheadersexample;
 
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuInflater;
-import com.actionbarsherlock.view.MenuItem;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderClickListener;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderLongClickListener;
@@ -30,7 +26,11 @@ import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -52,7 +52,7 @@ import android.widget.Toast;
  * 
  * @author Tonic Artos
  */
-public class ItemListFragment extends SherlockFragment implements OnItemClickListener,
+public class ItemListFragment extends Fragment implements OnItemClickListener,
         OnHeaderClickListener, OnHeaderLongClickListener {
     private static final String KEY_LIST_POSITION = "key_list_position";
 
