@@ -28,6 +28,7 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.SparseArray;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
@@ -225,9 +226,9 @@ public class StickyGridHeadersGridView extends GridView implements
                     totalItemCount);
         }
 
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
-            scrollChanged(firstVisibleItem);
-        }
+//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO) {
+//            scrollChanged(firstVisibleItem);
+//        }
     }
 
     @Override
