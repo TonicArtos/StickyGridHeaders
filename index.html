@@ -56,13 +56,13 @@ to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.</p>
 
-<p>The standard <code>ListView</code> is also supported in case you just want the benefit of 
-the improved row height calculations, the rows are sized to match the height of
-all items in the row, in StickyGridHeaders.</p>
+<p>The standard <code>ListViewAdapter</code> is also supported allowing you to drop in StickyGridHeaders and
+later enhance your adapter</p>
 
 <p>The simple adapter interface has the same signature as
-<code>StickyListHeadersAdapter</code> so if you are using the StickyListHeaders library
-your adapters are already fully ready for StickyGridHeaders.</p>
+<code>StickyListHeadersAdapter</code>, so if you are using the StickyListHeaders library
+your adapters are already fully ready for StickyGridHeaders. All you need to do is declare that your class
+implements <code>StickyGridHeadersSimpleAdapter</code></p>
 
 <h3>Including in your Project</h3>
 
@@ -70,7 +70,7 @@ your adapters are already fully ready for StickyGridHeaders.</p>
 project. The latest version is available from 
 <a href="https://docs.google.com/file/d/0B5I7vIqOHIjZQW9rcFFRdWtwYk0/edit?usp=sharing">Google Drive</a>.</p>
 
-<p>For Maven users, StickyGridHeaders can now be easily included by specifying it as
+<p>For Maven users, StickyGridHeaders (stable) can now be easily included by specifying it as
 a dependency:</p>
 
 <pre><code>&lt;dependency&gt;
