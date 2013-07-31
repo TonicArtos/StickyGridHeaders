@@ -259,7 +259,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         HeaderFillerView headerFillerView = (HeaderFillerView)convertView;
         if (headerFillerView == null) {
             headerFillerView = new HeaderFillerView(mContext);
-            headerFillerView.setHeaderWidth(mGridView.getWidth());
         }
 
         return headerFillerView;
@@ -394,8 +393,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     protected class HeaderFillerView extends FrameLayout {
         private int mHeaderId;
 
-        private int mHeaderWidth;
-
         public HeaderFillerView(Context context) {
             super(context);
         }
@@ -419,10 +416,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             mHeaderId = headerId;
         }
 
-        public void setHeaderWidth(int width) {
-            mHeaderWidth = width;
-        }
-
         @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             View v = (View)getTag();
@@ -431,10 +424,12 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
                 v.setLayoutParams(generateDefaultLayoutParams());
             }
             if (v.getVisibility() != View.GONE) {
-                if (v.getMeasuredHeight() == 0) {
-                    v.measure(MeasureSpec.makeMeasureSpec(mHeaderWidth, MeasureSpec.EXACTLY),
-                            MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED));
-                }
+                int heightSpec = getChildMeasureSpec(
+                        MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 0, params.height);
+                int widthSpec = getChildMeasureSpec(
+                        MeasureSpec.makeMeasureSpec(mGridView.getWidth(), MeasureSpec.EXACTLY), 0,
+                        params.width);
+                v.measure(widthSpec, heightSpec);
             }
             setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), v.getMeasuredHeight());
         }
