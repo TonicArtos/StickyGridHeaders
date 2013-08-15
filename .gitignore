@@ -21,4 +21,5 @@ Screenshots
 *.iml
 target/
 gen-external-apklibs/
-
+build/
+.gradle/
