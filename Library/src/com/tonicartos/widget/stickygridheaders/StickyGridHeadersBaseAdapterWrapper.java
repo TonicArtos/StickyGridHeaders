@@ -421,7 +421,8 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             View v = (View)getTag();
             android.view.ViewGroup.LayoutParams params = v.getLayoutParams();
             if (params == null) {
-                v.setLayoutParams(generateDefaultLayoutParams());
+                params = generateDefaultLayoutParams();
+                v.setLayoutParams(params);
             }
             if (v.getVisibility() != View.GONE) {
                 int heightSpec = getChildMeasureSpec(
