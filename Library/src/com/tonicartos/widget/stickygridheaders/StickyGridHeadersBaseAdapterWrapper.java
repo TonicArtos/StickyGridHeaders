@@ -179,7 +179,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         Position adapterPosition = translatePosition(position);
         if (adapterPosition.mPosition == POSITION_HEADER) {
             HeaderFillerView v = getHeaderFillerView(adapterPosition.mHeader, convertView, parent);
-            v.setTag(mDelegate.getHeaderView(adapterPosition.mHeader, (View)v.getTag(), parent));
+            View view = mDelegate.getHeaderView(adapterPosition.mHeader, (View)v.getTag(), parent);
+            v.setTag(view);
+            v.removeAllViews();
+            v.addView(view);
+            v.setVisibility(View.GONE);
             convertView = v;
             mLastHeaderViewSeen = v;
         } else if (adapterPosition.mPosition == POSITION_HEADER_FILLER) {
