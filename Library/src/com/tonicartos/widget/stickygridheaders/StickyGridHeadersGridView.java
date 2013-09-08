@@ -146,8 +146,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private boolean mHeadersIgnorePadding;
 
-    boolean mHeaderChildBeingPressed = false;
-
     public StickyGridHeadersGridView(Context context) {
         this(context, null);
     }
@@ -272,18 +270,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
-        if (mHeaderChildBeingPressed) {
-            View tempHeader = getHeaderAt(mMotionHeaderPosition);
-            if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                mMotionHeaderPosition = NO_MATCHED_HEADER;
-                mHeaderChildBeingPressed = false;
-            }
-            if (tempHeader != null) {
-                tempHeader.dispatchTouchEvent(ev);
-                tempHeader.invalidate();
-                invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
-            }
-        }
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 if (mPendingCheckForTap == null) {
@@ -294,14 +280,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 final int y = (int)ev.getY();
                 mMotionY = y;
                 mMotionHeaderPosition = findMotionHeader(y);
-                View tempHeader = getHeaderAt(mMotionHeaderPosition);
-                if (tempHeader != null){
-                    if (tempHeader.dispatchTouchEvent(ev)) {
-                        mHeaderChildBeingPressed = true;
-                    }
-                    tempHeader.invalidate();
-                    invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
-                }
                 if (mMotionHeaderPosition == NO_MATCHED_HEADER
                         || mScrollState == SCROLL_STATE_FLING) {
                     // Don't consume the event and pass it to super because we
@@ -316,17 +294,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     // Detected scroll initiation so cancel touch completion on
                     // header.
                     mTouchMode = TOUCH_MODE_REST;
-                    if (!mHeaderChildBeingPressed) {
-                        final View header = getHeaderAt(mMotionHeaderPosition);
-                        if (header != null) {
-                            header.setPressed(false);
-                        }
-                        final Handler handler = getHandler();
-                        if (handler != null) {
-                            handler.removeCallbacks(mPendingCheckForLongPress);
-                        }
-                        mMotionHeaderPosition = NO_MATCHED_HEADER;
+                    final View header = getHeaderAt(mMotionHeaderPosition);
+                    if (header != null) {
+                        header.setPressed(false);
                     }
+                    final Handler handler = getHandler();
+                    if (handler != null) {
+                        handler.removeCallbacks(mPendingCheckForLongPress);
+                    }
+                    mMotionHeaderPosition = NO_MATCHED_HEADER;
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -338,55 +314,53 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 }
 
                 final View header = getHeaderAt(mMotionHeaderPosition);
-                if (!mHeaderChildBeingPressed) {
-                    if (header != null && !header.hasFocusable()) {
-                        if (mTouchMode != TOUCH_MODE_DOWN) {
-                            header.setPressed(false);
+                if (header != null && !header.hasFocusable()) {
+                    if (mTouchMode != TOUCH_MODE_DOWN) {
+                        header.setPressed(false);
+                    }
+
+                    if (mPerformHeaderClick == null) {
+                        mPerformHeaderClick = new PerformHeaderClick();
+                    }
+
+                    final PerformHeaderClick performHeaderClick = mPerformHeaderClick;
+                    performHeaderClick.mClickMotionPosition = mMotionHeaderPosition;
+                    performHeaderClick.rememberWindowAttachCount();
+
+                    if (mTouchMode != TOUCH_MODE_DOWN || mTouchMode != TOUCH_MODE_TAP) {
+                        final Handler handler = getHandler();
+                        if (handler != null) {
+                            handler.removeCallbacks(mTouchMode == TOUCH_MODE_DOWN ? mPendingCheckForTap
+                                    : mPendingCheckForLongPress);
                         }
 
-                        if (mPerformHeaderClick == null) {
-                            mPerformHeaderClick = new PerformHeaderClick();
-                        }
-
-                        final PerformHeaderClick performHeaderClick = mPerformHeaderClick;
-                        performHeaderClick.mClickMotionPosition = mMotionHeaderPosition;
-                        performHeaderClick.rememberWindowAttachCount();
-
-                        if (mTouchMode != TOUCH_MODE_DOWN || mTouchMode != TOUCH_MODE_TAP) {
-                            final Handler handler = getHandler();
-                            if (handler != null) {
-                                handler.removeCallbacks(mTouchMode == TOUCH_MODE_DOWN ? mPendingCheckForTap
-                                        : mPendingCheckForLongPress);
+                        if (!mDataChanged) {
+                            // Got here so must be a tap. The long press would
+                            // have trigger on the callback handler. Probably.
+                            mTouchMode = TOUCH_MODE_TAP;
+                            header.setPressed(true);
+                            setPressed(true);
+                            if (mTouchModeReset != null) {
+                                removeCallbacks(mTouchModeReset);
                             }
-
-                            if (!mDataChanged) {
-                                // Got here so must be a tap. The long press would
-                                // have trigger on the callback handler. Probably.
-                                mTouchMode = TOUCH_MODE_TAP;
-                                header.setPressed(true);
-                                setPressed(true);
-                                if (mTouchModeReset != null) {
-                                    removeCallbacks(mTouchModeReset);
-                                }
-                                mTouchModeReset = new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        mTouchMode = TOUCH_MODE_REST;
-                                        header.setPressed(false);
-                                        setPressed(false);
-                                        if (!mDataChanged) {
-                                            performHeaderClick.run();
-                                        }
+                            mTouchModeReset = new Runnable() {
+                                @Override
+                                public void run() {
+                                    mTouchMode = TOUCH_MODE_REST;
+                                    header.setPressed(false);
+                                    setPressed(false);
+                                    if (!mDataChanged) {
+                                        performHeaderClick.run();
                                     }
-                                };
-                                postDelayed(mTouchModeReset,
-                                        ViewConfiguration.getPressedStateDuration());
-                            } else {
-                                mTouchMode = TOUCH_MODE_REST;
-                            }
-                        } else if (!mDataChanged) {
-                            performHeaderClick.run();
+                                }
+                            };
+                            postDelayed(mTouchModeReset,
+                                    ViewConfiguration.getPressedStateDuration());
+                        } else {
+                            mTouchMode = TOUCH_MODE_REST;
                         }
+                    } else if (!mDataChanged) {
+                        performHeaderClick.run();
                     }
                 }
                 mTouchMode = TOUCH_MODE_REST;
