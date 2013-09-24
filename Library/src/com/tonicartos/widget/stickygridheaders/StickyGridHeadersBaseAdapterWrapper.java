@@ -30,6 +30,7 @@ import android.widget.FrameLayout;
  * 
  * @author Tonic Artos
  */
+@SuppressWarnings("UnusedDeclaration")
 public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     private static final int sNumViewTypes = 3;
 
@@ -57,20 +58,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     private int mCount;
 
-    private DataSetObserver mDataSetObserver = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            updateCount();
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onInvalidated() {
-            mCounted = false;
-            notifyDataSetInvalidated();
-        }
-    };
-
     private StickyGridHeadersGridView mGridView;
 
     private int mNumColumns = 1;
@@ -86,7 +73,23 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         mContext = context;
         mDelegate = delegate;
         mGridView = gridView;
-        delegate.registerDataSetObserver(mDataSetObserver);
+        DataSetObserver dataSetObserver = new DataSetObserver()
+        {
+            @Override
+            public void onChanged()
+            {
+                updateCount();
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onInvalidated()
+            {
+                mCounted = false;
+                notifyDataSetInvalidated();
+            }
+        };
+        delegate.registerDataSetObserver(dataSetObserver);
     }
 
     @Override
@@ -219,12 +222,9 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     @Override
     public boolean isEnabled(int position) {
         Position adapterPosition = translatePosition(position);
-        if (adapterPosition.mPosition == POSITION_FILLER
-                || adapterPosition.mPosition == POSITION_HEADER) {
-            return false;
-        }
+        return !(adapterPosition.mPosition == POSITION_FILLER || adapterPosition.mPosition == POSITION_HEADER)
+                && mDelegate.isEnabled(adapterPosition.mPosition);
 
-        return mDelegate.isEnabled(adapterPosition.mPosition);
     }
 
     @Override
@@ -241,6 +241,36 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
         mDelegate.unregisterDataSetObserver(observer);
+    }
+
+    /**
+     * Translate adapter position to actual view position
+     * @param adapterPosition item position inside adapter
+     * @return view position inside {@link StickyGridHeadersGridView} views hierarchy. If view was not found,
+     * then return {@link StickyGridHeadersBaseAdapterWrapper#POSITION_FILLER}
+     */
+    public int findViewPosition(int adapterPosition)
+    {
+        if (adapterPosition >= 0 && adapterPosition < mDelegate.getCount())
+        {
+            int headersCount = mDelegate.getNumHeaders();
+            if (headersCount == 0)
+            {
+                return adapterPosition;
+            }
+            int itemsInHeader = 0;
+            int unfilledItemsCount = 0;
+            for (int i = 0; i < headersCount; i++)
+            {
+                itemsInHeader += mDelegate.getCountForHeader(i);
+                if (adapterPosition < itemsInHeader)
+                {
+                    return adapterPosition + mNumColumns * (i + 1) + unfilledItemsCount;
+                }
+                unfilledItemsCount += unFilledSpacesInHeaderGroup(i);
+            }
+        }
+        return POSITION_FILLER;
     }
 
     private FillerView getFillerView(View convertView, ViewGroup parent, View lastViewSeen) {
@@ -271,12 +301,13 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @param header Header set of items are grouped by.
      * @return The count of unfilled spaces in the last row.
      */
-    private int unFilledSpacesInHeaderGroup(int header) {
+    protected int unFilledSpacesInHeaderGroup(int header) {
         int remainder = mDelegate.getCountForHeader(header) % mNumColumns;
         return remainder == 0 ? 0 : mNumColumns - remainder;
     }
 
-    protected long getHeaderId(int position) {
+    /* there is no reason to return long from this method cause mHeader in Position class have int type */
+    protected int getHeaderId(int position) {
         return translatePosition(position).mHeader;
     }
 

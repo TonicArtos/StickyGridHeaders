@@ -33,7 +33,7 @@ public interface StickyGridHeadersBaseAdapter extends ListAdapter {
     /**
      * Get the number of items with a given header.
      *
-     * @param section
+     * @param header
      *            The header in the adapter's data set.
      * @return The number of items for the specified header.
      */

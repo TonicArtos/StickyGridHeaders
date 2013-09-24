@@ -16,9 +16,6 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
-import java.util.Arrays;
-import java.util.List;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,11 +23,15 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * @author Tonic Artos
  *
  * @param <T>
  */
+@SuppressWarnings("UnusedDeclaration")
 public class StickyGridHeadersSimpleArrayAdapter<T> extends BaseAdapter implements StickyGridHeadersSimpleAdapter {
     private int mHeaderResId;
     private LayoutInflater mInflater;
