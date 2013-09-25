@@ -629,7 +629,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private void reset() {
         mHeaderBottomPosition = 0;
-        mStickiedHeader = null;
+        swapStickiedHeader(null);
         mCurrentHeaderId = INVALID_ROW_ID;
     }
 
@@ -678,8 +678,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         if (mCurrentHeaderId != newHeaderId) {
-            mStickiedHeader = mAdapter.getHeaderView(selectedHeaderPosition, mStickiedHeader, this);
-            attachHeader(mStickiedHeader);
+            swapStickiedHeader(mAdapter.getHeaderView(selectedHeaderPosition, mStickiedHeader, this));
             measureHeader();
             mCurrentHeaderId = newHeaderId;
         }
@@ -741,7 +740,41 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
     }
 
+    private void swapStickiedHeader(View newStickiedHeader) {
+        detachHeader(mStickiedHeader);
+        attachHeader(newStickiedHeader);
+        mStickiedHeader = newStickiedHeader;
+    }
+
+    private void detachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
+        try {
+            Method method = View.class.getDeclaredMethod("dispatchDetachedFromWindow");
+            method.setAccessible(true);
+            method.invoke(header);
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
     private void attachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
         try {
             Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
             attachInfoField.setAccessible(true);
