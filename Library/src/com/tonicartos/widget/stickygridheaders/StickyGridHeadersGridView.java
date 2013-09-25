@@ -57,8 +57,6 @@ import android.widget.ListAdapter;
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
-    static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
-
     private static final int MATCHED_STICKIED_HEADER = -2;
 
     private static final int NO_MATCHED_HEADER = -1;
@@ -72,6 +70,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     protected static final int TOUCH_MODE_REST = -1;
 
     protected static final int TOUCH_MODE_TAP = 1;
+
+    static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
 
     public CheckForHeaderLongPress mPendingCheckForLongPress;
 
@@ -103,7 +103,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     private int mHeaderBottomPosition;
 
+    private boolean mHeadersIgnorePadding;
+
     private int mHorizontalSpacing;
+
+    private boolean mMaskStickyHeaderRegion = true;
 
     private float mMotionY;
 
@@ -147,10 +151,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     protected int mMotionHeaderPosition;
 
     protected int mTouchMode;
-
-    private boolean mMaskStickyHeaderRegion = true;
-
-    private boolean mHeadersIgnorePadding;
 
     boolean mHeaderChildBeingPressed = false;
 
@@ -488,6 +488,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         mColumnWidth = columnWidth;
     }
 
+    /**
+     * If set to true, headers will ignore horizontal padding.
+     * 
+     * @param b if true, horizontal padding is ignored by headers
+     */
+    public void setHeadersIgnorePadding(boolean b) {
+        mHeadersIgnorePadding = b;
+    }
+
     @Override
     public void setHorizontalSpacing(int horizontalSpacing) {
         super.setHorizontalSpacing(horizontalSpacing);
@@ -547,6 +556,63 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     public void setVerticalSpacing(int verticalSpacing) {
         super.setVerticalSpacing(verticalSpacing);
         mVerticalSpacing = verticalSpacing;
+    }
+
+    private void attachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
+        try {
+            Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
+            attachInfoField.setAccessible(true);
+            Method method = View.class.getDeclaredMethod("dispatchAttachedToWindow",
+                    Class.forName("android.view.View$AttachInfo"), Integer.TYPE);
+            method.setAccessible(true);
+            method.invoke(header, attachInfoField.get(this), View.GONE);
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
+    private void detachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
+        try {
+            Method method = View.class.getDeclaredMethod("dispatchDetachedFromWindow");
+            method.setAccessible(true);
+            method.invoke(header);
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
 
     private int findMotionHeader(float y) {
@@ -616,15 +682,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             mStickiedHeader.layout(getLeft() + getPaddingLeft(), 0, getRight() - getPaddingRight(),
                     mStickiedHeader.getMeasuredHeight());
         }
-    }
-
-    /**
-     * If set to true, headers will ignore horizontal padding.
-     * 
-     * @param b if true, horizontal padding is ignored by headers
-     */
-    public void setHeadersIgnorePadding(boolean b) {
-        mHeadersIgnorePadding = b;
     }
 
     private void reset() {
@@ -744,63 +801,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         detachHeader(mStickiedHeader);
         attachHeader(newStickiedHeader);
         mStickiedHeader = newStickiedHeader;
-    }
-
-    private void detachHeader(View header) {
-        if (header == null) {
-            return;
-        }
-
-        try {
-            Method method = View.class.getDeclaredMethod("dispatchDetachedFromWindow");
-            method.setAccessible(true);
-            method.invoke(header);
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-    }
-
-    private void attachHeader(View header) {
-        if (header == null) {
-            return;
-        }
-
-        try {
-            Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
-            attachInfoField.setAccessible(true);
-            Method method = View.class.getDeclaredMethod("dispatchAttachedToWindow",
-                    Class.forName("android.view.View$AttachInfo"), Integer.TYPE);
-            method.setAccessible(true);
-            method.invoke(header, attachInfoField.get(this), View.GONE);
-        } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
     }
 
     @Override
