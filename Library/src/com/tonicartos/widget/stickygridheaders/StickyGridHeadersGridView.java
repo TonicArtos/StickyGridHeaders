@@ -276,7 +276,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
-        Log.d(TAG, ev.toString());
         if (mHeaderChildBeingPressed) {
             View tempHeader = getHeaderAt(mMotionHeaderPosition);
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -346,6 +345,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 break;
             case MotionEvent.ACTION_UP:
                 if (mTouchMode == TOUCH_MODE_FINISHED_LONG_PRESS) {
+                    mTouchMode = TOUCH_MODE_REST;
                     return true;
                 }
                 if (mTouchMode == TOUCH_MODE_REST || mMotionHeaderPosition == NO_MATCHED_HEADER) {
@@ -367,7 +367,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                         performHeaderClick.mClickMotionPosition = mMotionHeaderPosition;
                         performHeaderClick.rememberWindowAttachCount();
 
-                        if (mTouchMode != TOUCH_MODE_DOWN || mTouchMode != TOUCH_MODE_TAP) {
+                        if (mTouchMode == TOUCH_MODE_DOWN || mTouchMode == TOUCH_MODE_TAP) {
                             final Handler handler = getHandler();
                             if (handler != null) {
                                 handler.removeCallbacks(mTouchMode == TOUCH_MODE_DOWN ? mPendingCheckForTap
@@ -388,6 +388,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                                 mTouchModeReset = new Runnable() {
                                     @Override
                                     public void run() {
+                                        mTouchModeReset = null;
                                         mTouchMode = TOUCH_MODE_REST;
                                         header.setPressed(false);
                                         setPressed(false);
