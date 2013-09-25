@@ -17,6 +17,10 @@
 package com.tonicartos.widget.stickygridheaders;
 
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,11 +33,9 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
-import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -55,7 +57,7 @@ import android.widget.ListAdapter;
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
-    private static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
+    static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
 
     private static final int MATCHED_STICKIED_HEADER = -2;
 
@@ -677,6 +679,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
         if (mCurrentHeaderId != newHeaderId) {
             mStickiedHeader = mAdapter.getHeaderView(selectedHeaderPosition, mStickiedHeader, this);
+            attachHeader(mStickiedHeader);
             measureHeader();
             mCurrentHeaderId = newHeaderId;
         }
@@ -735,6 +738,35 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     mHeaderBottomPosition += getPaddingTop();
                 }
             }
+        }
+    }
+
+    private void attachHeader(View header) {
+        try {
+            Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
+            attachInfoField.setAccessible(true);
+            Method method = View.class.getDeclaredMethod("dispatchAttachedToWindow",
+                    Class.forName("android.view.View$AttachInfo"), Integer.TYPE);
+            method.setAccessible(true);
+            method.invoke(header, attachInfoField.get(this), View.GONE);
+        } catch (NoSuchMethodException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalArgumentException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (InvocationTargetException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (NoSuchFieldException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
         }
     }
 
