@@ -53,7 +53,7 @@ import android.widget.ListAdapter;
  * GridView that displays items in sections with headers that stick to the top
  * of the view.
  * 
- * @author Tonic Artos, Emil Sjölander
+ * @author Tonic Artos, Emil Sjölander, caguilar187
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
