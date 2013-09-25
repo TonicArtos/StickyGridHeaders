@@ -290,12 +290,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             }
         }
 
-        // if (getTouchDelegate() != null) {
-        // if (getTouchDelegate().onTouchEvent(ev)) {
-        // return true;
-        // }
-        // }
-
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 if (mPendingCheckForTap == null) {
@@ -739,11 +733,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     mHeaderBottomPosition += getPaddingTop();
                 }
             }
-
-            TouchDelegate headerTouchDelegate;
-            Rect tdArea = new Rect(0, 0, getWidth(), mHeaderBottomPosition);
-            headerTouchDelegate = new TouchDelegate(tdArea, mStickiedHeader);
-            setTouchDelegate(headerTouchDelegate);
         }
     }
 
