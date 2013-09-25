@@ -279,12 +279,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (mHeaderChildBeingPressed) {
             View tempHeader = getHeaderAt(mMotionHeaderPosition);
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
-                mMotionHeaderPosition = NO_MATCHED_HEADER;
                 mHeaderChildBeingPressed = false;
             }
             if (tempHeader != null) {
                 tempHeader.dispatchTouchEvent(ev);
-                tempHeader.setPressed(mHeaderChildBeingPressed);
                 tempHeader.invalidate();
                 invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
             }
@@ -348,7 +346,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
                 final View header = getHeaderAt(mMotionHeaderPosition);
                 if (!mHeaderChildBeingPressed) {
-                    if (header != null && !header.hasFocusable()) {
+                    if (header != null) {
                         if (mTouchMode != TOUCH_MODE_DOWN) {
                             header.setPressed(false);
                         }
@@ -369,10 +367,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                             }
 
                             if (!mDataChanged) {
-                                // Got here so must be a tap. The long press
-                                // would
-                                // have trigger on the callback handler.
-                                // Probably.
+                                /*
+                                 * Got here so must be a tap. The long press
+                                 * would have triggered on the callback handler.
+                                 */
                                 mTouchMode = TOUCH_MODE_TAP;
                                 header.setPressed(true);
                                 setPressed(true);
@@ -382,11 +380,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                                 mTouchModeReset = new Runnable() {
                                     @Override
                                     public void run() {
+                                        mMotionHeaderPosition = NO_MATCHED_HEADER;
                                         mTouchModeReset = null;
                                         mTouchMode = TOUCH_MODE_REST;
                                         header.setPressed(false);
                                         setPressed(false);
-                                        if (!mDataChanged) {
+                                        header.invalidate();
+                                        invalidate(0, header.getTop(), getWidth(),
+                                                header.getHeight());
+                                        if (!header.hasFocusable() && !mDataChanged) {
                                             performHeaderClick.run();
                                         }
                                     }
