@@ -1,25 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@android:id/text1"
+    android:layout_width="0dip"
     android:layout_height="match_parent"
-    android:orientation="vertical" >
-
-    <TextView
-        android:id="@android:id/text1"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="left"
-        android:paddingBottom="4dp"
-        android:paddingLeft="4dp"
-        android:paddingTop="4dp"
-        android:textColor="@color/header"
-        android:textSize="15sp"
-        android:textStyle="bold" />
-
-    <FrameLayout
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="@color/header" >
-    </FrameLayout>
-
-</LinearLayout>
+    android:layout_weight="1"
+    android:gravity="left"
+    android:paddingBottom="4dp"
+    android:paddingLeft="4dp"
+    android:paddingTop="4dp"
+    android:textColor="@color/header"
+    android:textSize="15sp"
+    android:textStyle="bold" />

@@ -29,9 +29,11 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.HapticFeedbackConstants;
 import android.view.MotionEvent;
 import android.view.SoundEffectConstants;
+import android.view.TouchDelegate;
 import android.view.View;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
@@ -53,6 +55,8 @@ import android.widget.ListAdapter;
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
+    private static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
+
     private static final int MATCHED_STICKIED_HEADER = -2;
 
     private static final int NO_MATCHED_HEADER = -1;
@@ -272,6 +276,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
+        Log.d(TAG, ev.toString());
         if (mHeaderChildBeingPressed) {
             View tempHeader = getHeaderAt(mMotionHeaderPosition);
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
@@ -280,10 +285,18 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             }
             if (tempHeader != null) {
                 tempHeader.dispatchTouchEvent(ev);
+                tempHeader.setPressed(mHeaderChildBeingPressed);
                 tempHeader.invalidate();
                 invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
             }
         }
+
+        // if (getTouchDelegate() != null) {
+        // if (getTouchDelegate().onTouchEvent(ev)) {
+        // return true;
+        // }
+        // }
+
         switch (action & MotionEvent.ACTION_MASK) {
             case MotionEvent.ACTION_DOWN:
                 if (mPendingCheckForTap == null) {
@@ -295,9 +308,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 mMotionY = y;
                 mMotionHeaderPosition = findMotionHeader(y);
                 View tempHeader = getHeaderAt(mMotionHeaderPosition);
-                if (tempHeader != null){
+                if (tempHeader != null) {
                     if (tempHeader.dispatchTouchEvent(ev)) {
                         mHeaderChildBeingPressed = true;
+                        tempHeader.setPressed(true);
                     }
                     tempHeader.invalidate();
                     invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
@@ -316,17 +330,18 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     // Detected scroll initiation so cancel touch completion on
                     // header.
                     mTouchMode = TOUCH_MODE_REST;
-                    if (!mHeaderChildBeingPressed) {
-                        final View header = getHeaderAt(mMotionHeaderPosition);
-                        if (header != null) {
-                            header.setPressed(false);
-                        }
-                        final Handler handler = getHandler();
-                        if (handler != null) {
-                            handler.removeCallbacks(mPendingCheckForLongPress);
-                        }
-                        mMotionHeaderPosition = NO_MATCHED_HEADER;
+                    // if (!mHeaderChildBeingPressed) {
+                    final View header = getHeaderAt(mMotionHeaderPosition);
+                    if (header != null) {
+                        header.setPressed(false);
+                        header.invalidate();
                     }
+                    final Handler handler = getHandler();
+                    if (handler != null) {
+                        handler.removeCallbacks(mPendingCheckForLongPress);
+                    }
+                    mMotionHeaderPosition = NO_MATCHED_HEADER;
+                    // }
                 }
                 break;
             case MotionEvent.ACTION_UP:
@@ -360,8 +375,10 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                             }
 
                             if (!mDataChanged) {
-                                // Got here so must be a tap. The long press would
-                                // have trigger on the callback handler. Probably.
+                                // Got here so must be a tap. The long press
+                                // would
+                                // have trigger on the callback handler.
+                                // Probably.
                                 mTouchMode = TOUCH_MODE_TAP;
                                 header.setPressed(true);
                                 setPressed(true);
@@ -721,6 +738,11 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     mHeaderBottomPosition += getPaddingTop();
                 }
             }
+
+            TouchDelegate headerTouchDelegate;
+            Rect tdArea = new Rect(0, 0, getWidth(), mHeaderBottomPosition);
+            headerTouchDelegate = new TouchDelegate(tdArea, mStickiedHeader);
+            setTouchDelegate(headerTouchDelegate);
         }
     }
 
@@ -883,7 +905,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         mStickiedHeader.draw(canvas);
-        
+
         if (mHeaderBottomPosition != headerHeight) {
             canvas.restore();
         }
