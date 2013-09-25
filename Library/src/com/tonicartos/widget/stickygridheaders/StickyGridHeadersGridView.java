@@ -616,7 +616,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     }
 
     private int findMotionHeader(float y) {
-        if (mStickiedHeader != null && y <= mStickiedHeader.getBottom()) {
+        if (mStickiedHeader != null && y <= mHeaderBottomPosition) {
             return MATCHED_STICKIED_HEADER;
         }
 
