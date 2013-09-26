@@ -275,24 +275,74 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         mScrollState = scrollState;
     }
 
+    private static int[] getPointerIds(MotionEvent e) {
+        int n = e.getPointerCount();
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            r[i] = e.getPointerId(i);
+        }
+        return r;
+    }
+
+    private static MotionEvent.PointerCoords[] getPointerCoords(MotionEvent e) {
+        int n = e.getPointerCount();
+        MotionEvent.PointerCoords[] r = new MotionEvent.PointerCoords[n];
+        for (int i = 0; i < n; i++) {
+            r[i] = new MotionEvent.PointerCoords();
+            e.getPointerCoords(i, r[i]);
+        }
+        return r;
+    }
+
+    private MotionEvent transformEvent(MotionEvent e, int headerPosition) {
+        if (headerPosition == MATCHED_STICKIED_HEADER) {
+            return e;
+        }
+
+        long downTime = e.getDownTime();
+        long eventTime = e.getEventTime();
+        int action = e.getAction();
+        int pointerCount = e.getPointerCount();
+        int[] pointerIds = getPointerIds(e);
+        MotionEvent.PointerCoords[] pointerCoords = getPointerCoords(e);
+        int metaState = e.getMetaState();
+        float xPrecision = e.getXPrecision();
+        float yPrecision = e.getYPrecision();
+        int deviceId = e.getDeviceId();
+        int edgeFlags = e.getEdgeFlags();
+        int source = e.getSource();
+        int flags = e.getFlags();
+
+        View headerHolder = getChildAt(headerPosition);
+        for (int i = 0; i < pointerCount;i++) {
+            pointerCoords[i].y -= headerHolder.getTop();
+        }
+        MotionEvent n = MotionEvent.obtain(downTime, eventTime, action,
+                pointerCount, pointerIds, pointerCoords, metaState, xPrecision,
+                yPrecision, deviceId, edgeFlags, source, flags);
+        return n;
+    }
+
     @Override
     public boolean onTouchEvent(MotionEvent ev) {
         final int action = ev.getAction();
         boolean wasHeaderChildBeingPressed = mHeaderChildBeingPressed;
         if (mHeaderChildBeingPressed) {
             final View tempHeader = getHeaderAt(mMotionHeaderPosition);
+            final View headerHolder = mMotionHeaderPosition == MATCHED_STICKIED_HEADER ?
+                    tempHeader : getChildAt(mMotionHeaderPosition);
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 mHeaderChildBeingPressed = false;
             }
             if (tempHeader != null) {
-                tempHeader.dispatchTouchEvent(ev);
+                tempHeader.dispatchTouchEvent(transformEvent(ev, mMotionHeaderPosition));
                 tempHeader.invalidate();
                 tempHeader.postDelayed(new Runnable() {
                     public void run() {
-                        invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
+                        invalidate(0, headerHolder.getTop(), getWidth(), headerHolder.getTop()+headerHolder.getHeight());
                     }
-                },ViewConfiguration.getPressedStateDuration());
-                invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
+                }, ViewConfiguration.getPressedStateDuration());
+                invalidate(0, headerHolder.getTop(), getWidth(), headerHolder.getTop()+headerHolder.getHeight());
             }
         }
 
@@ -314,12 +364,15 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                 } else {
                     View tempHeader = getHeaderAt(mMotionHeaderPosition);
                     if (tempHeader != null) {
-                        if (tempHeader.dispatchTouchEvent(ev)) {
+                        if (tempHeader.dispatchTouchEvent(transformEvent(ev, mMotionHeaderPosition))) {
                             mHeaderChildBeingPressed = true;
                             tempHeader.setPressed(true);
                         }
                         tempHeader.invalidate();
-                        invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
+                        if (mMotionHeaderPosition != MATCHED_STICKIED_HEADER) {
+                            tempHeader = getChildAt(mMotionHeaderPosition);
+                        }
+                        invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getTop()+tempHeader.getHeight());
                     }
                 }
                 mTouchMode = TOUCH_MODE_DOWN;
@@ -565,7 +618,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         mVerticalSpacing = verticalSpacing;
     }
 
-    private void attachHeader(View header) {
+    void attachHeader(View header) {
         if (header == null) {
             return;
         }
@@ -598,7 +651,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
     }
 
-    private void detachHeader(View header) {
+    void detachHeader(View header) {
         if (header == null) {
             return;
         }
