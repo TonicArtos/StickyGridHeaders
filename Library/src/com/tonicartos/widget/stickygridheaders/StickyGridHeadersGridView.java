@@ -16,10 +16,6 @@
 
 package com.tonicartos.widget.stickygridheaders;
 
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Canvas;
@@ -29,12 +25,7 @@ import android.os.Handler;
 import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.AttributeSet;
-import android.view.HapticFeedbackConstants;
-import android.view.MotionEvent;
-import android.view.SoundEffectConstants;
-import android.view.View;
-import android.view.ViewConfiguration;
-import android.view.ViewGroup;
+import android.view.*;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
@@ -44,6 +35,10 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.GridView;
 import android.widget.ListAdapter;
+import com.tonicartos.widget.stickygridheaders.StickyGridHeadersBaseAdapterWrapper.HeaderFillerView;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * GridView that displays items in sections with headers that stick to the top
@@ -51,6 +46,7 @@ import android.widget.ListAdapter;
  * 
  * @author Tonic Artos, Emil Sjölander
  */
+@SuppressWarnings("UnusedDeclaration")
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
     private static final int MATCHED_STICKIED_HEADER = -2;
@@ -187,6 +183,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         try {
             return (View)getChildAt(position).getTag();
         } catch (Exception e) {
+            /* do nothing */
         }
         return null;
     }
@@ -202,6 +199,51 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     public boolean getStickyHeaderIsTranscluent() {
         return !mMaskStickyHeaderRegion;
+    }
+
+    /**
+     * @return first visible adapter item index
+     */
+    public int getFirstVisibleAdapterPosition()
+    {
+        int contentViewPosition = getFirstVisiblePosition();
+        switch (mAdapter.getItemViewType(contentViewPosition))
+        {
+            /* Here we should always get 2 possible options: header is visible or content item.
+            * If we're get FILLER or HEADER_FILLER then something went wrong. */
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_FILLER:
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_HEADER_FILLER:
+                return 0; /* wtf!? should never happens */
+
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_HEADER:
+                contentViewPosition += mNumColumns;
+        }
+        return mAdapter.translatePosition(contentViewPosition).mPosition;
+    }
+
+    /**
+     * @return last visible adapter item index
+     */
+    public int getLastVisibleAdapterPosition()
+    {
+        int contentViewPosition = getLastVisiblePosition();
+        switch (mAdapter.getItemViewType(contentViewPosition))
+        {
+            /* Here we should always get 3 possible options: header filler, filler or content item is visible.
+            * If we're get HEADER then something went wrong. */
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_HEADER:
+                return 0; /* wtf!? should never happens */
+
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_FILLER:
+                contentViewPosition -=
+                        mAdapter.unFilledSpacesInHeaderGroup(mAdapter.getHeaderId(contentViewPosition));
+                break;
+
+            case StickyGridHeadersBaseAdapterWrapper.VIEW_TYPE_HEADER_FILLER:
+                contentViewPosition -= mNumColumns;
+                contentViewPosition -= mAdapter.unFilledSpacesInHeaderGroup(mAdapter.getHeaderId(contentViewPosition));
+        }
+        return mAdapter.translatePosition(contentViewPosition).mPosition;
     }
 
     @Override
@@ -327,7 +369,9 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     performHeaderClick.mClickMotionPosition = mMotionHeaderPosition;
                     performHeaderClick.rememberWindowAttachCount();
 
-                    if (mTouchMode != TOUCH_MODE_DOWN || mTouchMode != TOUCH_MODE_TAP) {
+                    /* previous condition (mTouchMode != TOUCH_MODE_DOWN || mTouchMode != TOUCH_MODE_TAP)
+                    is always true */
+                    if (mTouchMode != TOUCH_MODE_DOWN && mTouchMode != TOUCH_MODE_TAP) {
                         final Handler handler = getHandler();
                         if (handler != null) {
                             handler.removeCallbacks(mTouchMode == TOUCH_MODE_DOWN ? mPendingCheckForTap
@@ -558,7 +602,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     - getPaddingRight(), MeasureSpec.EXACTLY);
         }
 
-        int heightMeasureSpec = 0;
+        int heightMeasureSpec;
 
         ViewGroup.LayoutParams params = mStickiedHeader.getLayoutParams();
         if (params != null && params.height > 0) {
@@ -617,7 +661,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         if (mVerticalSpacing == 0) {
             newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
         } else if (mVerticalSpacing < 0) {
-            newHeaderId = mAdapter.getHeaderId(firstVisibleItem);
             View firstSecondRowView = getChildAt(mNumMeasuredColumns);
             if (firstSecondRowView.getTop() <= 0) {
                 newHeaderId = mAdapter.getHeaderId(secondRowPosition);
@@ -742,8 +785,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         // Draw headers in list.
-        for (int i = 0; i < headerPositions.size(); i++) {
-            View frame = getChildAt(headerPositions.get(i));
+        for (Integer position : headerPositions) {
+            View frame = getChildAt(position);
             View header;
             try {
                 header = (View)frame.getTag();

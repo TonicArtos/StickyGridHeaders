@@ -9,20 +9,22 @@ import android.widget.ListAdapter;
 public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
     private ListAdapter mDelegate;
 
-    private DataSetObserver mDataSetObserver = new DataSetObserver() {
-        @Override
-        public void onChanged() {
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public void onInvalidated() {
-            notifyDataSetInvalidated();
-        }
-    };
-
     public StickyGridHeadersListAdapterWrapper(ListAdapter adapter) {
         mDelegate = adapter;
+        DataSetObserver mDataSetObserver = new DataSetObserver()
+        {
+            @Override
+            public void onChanged()
+            {
+                notifyDataSetChanged();
+            }
+
+            @Override
+            public void onInvalidated()
+            {
+                notifyDataSetInvalidated();
+            }
+        };
         adapter.registerDataSetObserver(mDataSetObserver);
     }
 
