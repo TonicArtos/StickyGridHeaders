@@ -280,13 +280,18 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         final int action = ev.getAction();
         boolean wasHeaderChildBeingPressed = mHeaderChildBeingPressed;
         if (mHeaderChildBeingPressed) {
-            View tempHeader = getHeaderAt(mMotionHeaderPosition);
+            final View tempHeader = getHeaderAt(mMotionHeaderPosition);
             if (action == MotionEvent.ACTION_UP || action == MotionEvent.ACTION_CANCEL) {
                 mHeaderChildBeingPressed = false;
             }
             if (tempHeader != null) {
                 tempHeader.dispatchTouchEvent(ev);
                 tempHeader.invalidate();
+                tempHeader.postDelayed(new Runnable() {
+                    public void run() {
+                        invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
+                    }
+                },ViewConfiguration.getPressedStateDuration());
                 invalidate(0, tempHeader.getTop(), getWidth(), tempHeader.getHeight());
             }
         }
