@@ -70,6 +70,11 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
     }
 
     @Override
+    public boolean hasStableIds() {
+        return mDelegate.hasStableIds();
+    }
+
+    @Override
     public int getItemViewType(int position) {
         return mDelegate.getItemViewType(position);
     }
@@ -82,7 +87,6 @@ public class StickyGridHeadersSimpleAdapterWrapper extends BaseAdapter implement
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return mDelegate.getView(position, convertView, parent);
-
     }
 
     @Override
