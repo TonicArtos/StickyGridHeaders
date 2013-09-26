@@ -57,6 +57,9 @@ import android.widget.ListAdapter;
  */
 public class StickyGridHeadersGridView extends GridView implements OnScrollListener,
         OnItemClickListener, OnItemSelectedListener, OnItemLongClickListener {
+    private static final String ERROR_PLATFORM = "Error supporting platform "
+            + Build.VERSION.SDK_INT + ".";
+
     private static final int MATCHED_STICKIED_HEADER = -2;
 
     private static final int NO_MATCHED_HEADER = -1;
@@ -571,23 +574,17 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             method.setAccessible(true);
             method.invoke(header, attachInfoField.get(this), View.GONE);
         } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (ClassNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (NoSuchFieldException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         }
     }
 
@@ -601,17 +598,13 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             method.setAccessible(true);
             method.invoke(header);
         } catch (NoSuchMethodException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (IllegalArgumentException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (IllegalAccessException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         } catch (InvocationTargetException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            throw new RuntimePlatformSupportException(e);
         }
     }
 
@@ -735,7 +728,8 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         if (mCurrentHeaderId != newHeaderId) {
-            swapStickiedHeader(mAdapter.getHeaderView(selectedHeaderPosition, mStickiedHeader, this));
+            swapStickiedHeader(mAdapter
+                    .getHeaderView(selectedHeaderPosition, mStickiedHeader, this));
             measureHeader();
             mCurrentHeaderId = newHeaderId;
         }
@@ -1114,6 +1108,14 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                     }
                 }
             }
+        }
+    }
+
+    class RuntimePlatformSupportException extends RuntimeException {
+        private static final long serialVersionUID = -6512098808936536538L;
+
+        public RuntimePlatformSupportException(Exception e) {
+            super(ERROR_PLATFORM, e);
         }
     }
 
