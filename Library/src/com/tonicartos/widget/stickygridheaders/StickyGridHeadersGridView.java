@@ -1145,7 +1145,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             if (mTouchMode == TOUCH_MODE_DOWN) {
                 mTouchMode = TOUCH_MODE_TAP;
                 final View header = getHeaderAt(mMotionHeaderPosition);
-                if (header != null && !header.hasFocusable()) {
+                if (header != null && !mHeaderChildBeingPressed) {
                     if (!mDataChanged) {
                         header.setPressed(true);
                         setPressed(true);
