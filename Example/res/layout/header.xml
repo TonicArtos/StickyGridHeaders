@@ -21,19 +21,6 @@
             android:textColor="@color/header"
             android:textSize="15sp"
             android:textStyle="bold" />
-
-        <Button
-            android:id="@android:id/button1"
-            android:layout_width="0dip"
-            android:layout_height="48dp"
-            android:layout_weight="1"
-            android:gravity="left"
-            android:paddingBottom="4dp"
-            android:paddingLeft="4dp"
-            android:paddingTop="4dp"
-            android:textColor="@color/header"
-            android:textSize="15sp"
-            android:textStyle="bold" />
     </LinearLayout>
 
     <FrameLayout
