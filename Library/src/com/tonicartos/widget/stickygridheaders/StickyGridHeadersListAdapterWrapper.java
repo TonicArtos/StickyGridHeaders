@@ -7,8 +7,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
 public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
-    private ListAdapter mDelegate;
-
     private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
@@ -21,6 +19,8 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
         }
     };
 
+    private ListAdapter mDelegate;
+
     public StickyGridHeadersListAdapterWrapper(ListAdapter adapter) {
         mDelegate = adapter;
         adapter.registerDataSetObserver(mDataSetObserver);
@@ -29,6 +29,16 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     @Override
     public int getCount() {
         return mDelegate.getCount();
+    }
+
+    @Override
+    public int getCountForHeader(int header) {
+        return 0;
+    }
+
+    @Override
+    public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        return null;
     }
 
     @Override
@@ -42,23 +52,13 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return mDelegate.getView(position, convertView, parent);
-    }
-
-    @Override
-    public int getCountForHeader(int header) {
-        return 0;
-    }
-
-    @Override
     public int getNumHeaders() {
         return 0;
     }
 
     @Override
-    public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return null;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return mDelegate.getView(position, convertView, parent);
     }
 
 }

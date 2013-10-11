@@ -51,11 +51,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     protected static final int VIEW_TYPE_HEADER_FILLER = 0x02;
 
-    private final StickyGridHeadersBaseAdapter mDelegate;
-
     private final Context mContext;
 
     private int mCount;
+
+    private boolean mCounted = false;
 
     private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
@@ -71,15 +71,15 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
     };
 
+    private final StickyGridHeadersBaseAdapter mDelegate;
+
     private StickyGridHeadersGridView mGridView;
-
-    private int mNumColumns = 1;
-
-    private View mLastViewSeen;
 
     private View mLastHeaderViewSeen;
 
-    private boolean mCounted = false;
+    private View mLastViewSeen;
+
+    private int mNumColumns = 1;
 
     public StickyGridHeadersBaseAdapterWrapper(Context context, StickyGridHeadersGridView gridView,
             StickyGridHeadersBaseAdapter delegate) {
@@ -197,16 +197,16 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         return convertView;
     }
 
+    @Override
+    public int getViewTypeCount() {
+        return mDelegate.getViewTypeCount() + sNumViewTypes;
+    }
+
     /**
      * @return the adapter wrapped by this adapter.
      */
     public StickyGridHeadersBaseAdapter getWrappedAdapter() {
         return mDelegate;
-    }
-
-    @Override
-    public int getViewTypeCount() {
-        return mDelegate.getViewTypeCount() + sNumViewTypes;
     }
 
     @Override
@@ -367,16 +367,16 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
             super(context);
         }
 
-        public void setMeasureTarget(View lastViewSeen) {
-            mMeasureTarget = lastViewSeen;
-        }
-
         public FillerView(Context context, AttributeSet attrs) {
             super(context, attrs);
         }
 
         public FillerView(Context context, AttributeSet attrs, int defStyle) {
             super(context, attrs, defStyle);
+        }
+
+        public void setMeasureTarget(View lastViewSeen) {
+            mMeasureTarget = lastViewSeen;
         }
 
         @Override
@@ -420,6 +420,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         }
 
         @Override
+        protected LayoutParams generateDefaultLayoutParams() {
+            return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
+        }
+
+        @Override
         protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
             View v = (View)getTag();
             android.view.ViewGroup.LayoutParams params = v.getLayoutParams();
@@ -436,11 +441,6 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
                 v.measure(widthSpec, heightSpec);
             }
             setMeasuredDimension(MeasureSpec.getSize(widthMeasureSpec), v.getMeasuredHeight());
-        }
-
-        @Override
-        protected LayoutParams generateDefaultLayoutParams() {
-            return new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
         }
     }
 

@@ -76,6 +76,25 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
 
     static final String TAG = StickyGridHeadersGridView.class.getSimpleName();
 
+    private static MotionEvent.PointerCoords[] getPointerCoords(MotionEvent e) {
+        int n = e.getPointerCount();
+        MotionEvent.PointerCoords[] r = new MotionEvent.PointerCoords[n];
+        for (int i = 0; i < n; i++) {
+            r[i] = new MotionEvent.PointerCoords();
+            e.getPointerCoords(i, r[i]);
+        }
+        return r;
+    }
+
+    private static int[] getPointerIds(MotionEvent e) {
+        int n = e.getPointerCount();
+        int[] r = new int[n];
+        for (int i = 0; i < n; i++) {
+            r[i] = e.getPointerId(i);
+        }
+        return r;
+    }
+
     public CheckForHeaderLongPress mPendingCheckForLongPress;
 
     public CheckForHeaderTap mPendingCheckForTap;
@@ -276,54 +295,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         }
 
         mScrollState = scrollState;
-    }
-
-    private static int[] getPointerIds(MotionEvent e) {
-        int n = e.getPointerCount();
-        int[] r = new int[n];
-        for (int i = 0; i < n; i++) {
-            r[i] = e.getPointerId(i);
-        }
-        return r;
-    }
-
-    private static MotionEvent.PointerCoords[] getPointerCoords(MotionEvent e) {
-        int n = e.getPointerCount();
-        MotionEvent.PointerCoords[] r = new MotionEvent.PointerCoords[n];
-        for (int i = 0; i < n; i++) {
-            r[i] = new MotionEvent.PointerCoords();
-            e.getPointerCoords(i, r[i]);
-        }
-        return r;
-    }
-
-    private MotionEvent transformEvent(MotionEvent e, int headerPosition) {
-        if (headerPosition == MATCHED_STICKIED_HEADER) {
-            return e;
-        }
-
-        long downTime = e.getDownTime();
-        long eventTime = e.getEventTime();
-        int action = e.getAction();
-        int pointerCount = e.getPointerCount();
-        int[] pointerIds = getPointerIds(e);
-        MotionEvent.PointerCoords[] pointerCoords = getPointerCoords(e);
-        int metaState = e.getMetaState();
-        float xPrecision = e.getXPrecision();
-        float yPrecision = e.getYPrecision();
-        int deviceId = e.getDeviceId();
-        int edgeFlags = e.getEdgeFlags();
-        int source = e.getSource();
-        int flags = e.getFlags();
-
-        View headerHolder = getChildAt(headerPosition);
-        for (int i = 0; i < pointerCount;i++) {
-            pointerCoords[i].y -= headerHolder.getTop();
-        }
-        MotionEvent n = MotionEvent.obtain(downTime, eventTime, action,
-                pointerCount, pointerIds, pointerCoords, metaState, xPrecision,
-                yPrecision, deviceId, edgeFlags, source, flags);
-        return n;
     }
 
     @Override
@@ -621,53 +592,6 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         mVerticalSpacing = verticalSpacing;
     }
 
-    void attachHeader(View header) {
-        if (header == null) {
-            return;
-        }
-
-        try {
-            Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
-            attachInfoField.setAccessible(true);
-            Method method = View.class.getDeclaredMethod("dispatchAttachedToWindow",
-                    Class.forName("android.view.View$AttachInfo"), Integer.TYPE);
-            method.setAccessible(true);
-            method.invoke(header, attachInfoField.get(this), View.GONE);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (ClassNotFoundException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (NoSuchFieldException e) {
-            throw new RuntimePlatformSupportException(e);
-        }
-    }
-
-    void detachHeader(View header) {
-        if (header == null) {
-            return;
-        }
-
-        try {
-            Method method = View.class.getDeclaredMethod("dispatchDetachedFromWindow");
-            method.setAccessible(true);
-            method.invoke(header);
-        } catch (NoSuchMethodException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (IllegalArgumentException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (IllegalAccessException e) {
-            throw new RuntimePlatformSupportException(e);
-        } catch (InvocationTargetException e) {
-            throw new RuntimePlatformSupportException(e);
-        }
-    }
-
     private int findMotionHeader(float y) {
         if (mStickiedHeader != null && y <= mHeaderBottomPosition) {
             return MATCHED_STICKIED_HEADER;
@@ -855,6 +779,35 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         detachHeader(mStickiedHeader);
         attachHeader(newStickiedHeader);
         mStickiedHeader = newStickiedHeader;
+    }
+
+    private MotionEvent transformEvent(MotionEvent e, int headerPosition) {
+        if (headerPosition == MATCHED_STICKIED_HEADER) {
+            return e;
+        }
+
+        long downTime = e.getDownTime();
+        long eventTime = e.getEventTime();
+        int action = e.getAction();
+        int pointerCount = e.getPointerCount();
+        int[] pointerIds = getPointerIds(e);
+        MotionEvent.PointerCoords[] pointerCoords = getPointerCoords(e);
+        int metaState = e.getMetaState();
+        float xPrecision = e.getXPrecision();
+        float yPrecision = e.getYPrecision();
+        int deviceId = e.getDeviceId();
+        int edgeFlags = e.getEdgeFlags();
+        int source = e.getSource();
+        int flags = e.getFlags();
+
+        View headerHolder = getChildAt(headerPosition);
+        for (int i = 0; i < pointerCount;i++) {
+            pointerCoords[i].y -= headerHolder.getTop();
+        }
+        MotionEvent n = MotionEvent.obtain(downTime, eventTime, action,
+                pointerCount, pointerIds, pointerCoords, metaState, xPrecision,
+                yPrecision, deviceId, edgeFlags, source, flags);
+        return n;
     }
 
     @Override
@@ -1067,6 +1020,53 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         measureHeader();
 
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
+    }
+
+    void attachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
+        try {
+            Field attachInfoField = View.class.getDeclaredField("mAttachInfo");
+            attachInfoField.setAccessible(true);
+            Method method = View.class.getDeclaredMethod("dispatchAttachedToWindow",
+                    Class.forName("android.view.View$AttachInfo"), Integer.TYPE);
+            method.setAccessible(true);
+            method.invoke(header, attachInfoField.get(this), View.GONE);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (ClassNotFoundException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (NoSuchFieldException e) {
+            throw new RuntimePlatformSupportException(e);
+        }
+    }
+
+    void detachHeader(View header) {
+        if (header == null) {
+            return;
+        }
+
+        try {
+            Method method = View.class.getDeclaredMethod("dispatchDetachedFromWindow");
+            method.setAccessible(true);
+            method.invoke(header);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (IllegalArgumentException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimePlatformSupportException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimePlatformSupportException(e);
+        }
     }
 
     public interface OnHeaderClickListener {
