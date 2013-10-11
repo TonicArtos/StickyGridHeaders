@@ -52,6 +52,11 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     }
 
     @Override
+    public int getItemViewType(int position) {
+        return mDelegate.getItemViewType(position);
+    }
+
+    @Override
     public int getNumHeaders() {
         return 0;
     }
@@ -59,6 +64,16 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         return mDelegate.getView(position, convertView, parent);
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return mDelegate.getViewTypeCount();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return mDelegate.hasStableIds();
     }
 
 }
