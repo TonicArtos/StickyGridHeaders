@@ -651,6 +651,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
         } else {
             heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
         }
+        mStickiedHeader.measure(MeasureSpec.makeMeasureSpec(0,0), MeasureSpec.makeMeasureSpec(0,0));
         mStickiedHeader.measure(widthMeasureSpec, heightMeasureSpec);
 
         if (mHeadersIgnorePadding) {
@@ -878,6 +879,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
             }
 
             int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+            header.measure(MeasureSpec.makeMeasureSpec(0,0),MeasureSpec.makeMeasureSpec(0,0));
             header.measure(widthMeasureSpec, heightMeasureSpec);
 
             if (mHeadersIgnorePadding) {
@@ -931,6 +933,7 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
                         - getPaddingRight(), MeasureSpec.EXACTLY); // Bug here
             }
             int heightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+            mStickiedHeader.measure(MeasureSpec.makeMeasureSpec(0,0),MeasureSpec.makeMeasureSpec(0,0));
             mStickiedHeader.measure(widthMeasureSpec, heightMeasureSpec);
             if (mHeadersIgnorePadding) {
                 mStickiedHeader.layout(getLeft(), 0, getRight(), mStickiedHeader.getHeight());
