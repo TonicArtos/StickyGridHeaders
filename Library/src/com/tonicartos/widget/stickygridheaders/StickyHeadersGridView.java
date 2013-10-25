@@ -184,6 +184,8 @@ public class StickyHeadersGridView extends AdapterView<StickyHeadersListAdapter>
 
     private Method mDispatchStartTemporaryDetach;
 
+    private boolean mHeadersSticky;
+
     private CheckForLongPress mPendingCheckForLongPress;
 
     private CheckForTap mPendingCheckForTap;
@@ -234,6 +236,10 @@ public class StickyHeadersGridView extends AdapterView<StickyHeadersListAdapter>
         mTouchSlop = ViewConfiguration.get(context).getScaledTouchSlop();
 
         initHiddenMethods();
+    }
+
+    public boolean areHeadersSticky() {
+        return mHeadersSticky;
     }
 
     public long childViewPositionToId(int clickMotionPosition) {
@@ -421,9 +427,21 @@ public class StickyHeadersGridView extends AdapterView<StickyHeadersListAdapter>
         requestLayout();
     }
 
+    public void setAreHeadersSticky(boolean areHeaderSticky) {
+        mHeadersSticky = areHeaderSticky;
+    }
+
+    public void setChoiceMode(int choiceMode) {
+        mChoiceMode = choiceMode;
+    }
+
+    public void setItemChecked(int position, boolean value) {
+        // TODO:
+    }
+
     @Override
     public void setSelection(int position) {
-        throw new RuntimeException("Unsupport method: setSelection(int)");
+//        throw new RuntimeException("Unsupport method: setSelection(int)");
     }
 
     public void setSelector(Drawable s) {
