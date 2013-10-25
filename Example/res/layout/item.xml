@@ -4,5 +4,6 @@
     android:id="@android:id/text1"
     android:layout_width="match_parent"
     android:layout_height="90dip"
+    android:background="@drawable/abc_item_background_holo_light"
     android:gravity="center"
     android:padding="10dp" />

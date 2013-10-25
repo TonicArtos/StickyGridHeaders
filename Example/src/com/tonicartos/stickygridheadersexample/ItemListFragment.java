@@ -16,10 +16,10 @@
 
 package com.tonicartos.stickygridheadersexample;
 
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderClickListener;
 import com.tonicartos.widget.stickygridheaders.StickyGridHeadersGridView.OnHeaderLongClickListener;
-import com.tonicartos.widget.stickygridheaders.StickyGridHeadersSimpleArrayAdapter;
+import com.tonicartos.widget.stickygridheaders.StickyHeadersGridView;
+import com.tonicartos.widget.stickygridheaders.StickyHeadersListAdapter;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -52,8 +52,7 @@ import android.widget.Toast;
  * 
  * @author Tonic Artos
  */
-public class ItemListFragment extends Fragment implements OnItemClickListener,
-        OnHeaderClickListener, OnHeaderLongClickListener {
+public class ItemListFragment extends Fragment {
     private static final String KEY_LIST_POSITION = "key_list_position";
 
     /**
@@ -71,10 +70,12 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
      * activated item position. Only used on tablets.
      */
     private static final String STATE_ACTIVATED_POSITION = "activated_position";
+
     /**
      * The current activated item position. Only used on tablets.
      */
     private int mActivatedPosition = ListView.INVALID_POSITION;
+
     /**
      * The fragment's current callback object, which is notified of list item
      * clicks.
@@ -83,9 +84,47 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
 
     private int mFirstVisible;
 
-    private GridView mGridView;
+    private StickyHeadersGridView mGridView;
 
     private Menu mMenu;
+
+    private OnHeaderClickListener mOnHeaderClickListener = new OnHeaderClickListener() {
+        @Override
+        public void onHeaderClick(AdapterView<?> parent, View view, long id) {
+            String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText()
+                    + " was tapped.";
+            if (mToast == null) {
+                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            } else {
+                mToast.setText(text);
+            }
+            mToast.show();
+        }
+    };
+
+    private OnHeaderLongClickListener mOnHeaderLongClickListener = new OnHeaderLongClickListener() {
+        @Override
+        public boolean onHeaderLongClick(AdapterView<?> parent, View view, long id) {
+            String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText()
+                    + " was long pressed.";
+            if (mToast == null) {
+                mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
+            } else {
+                mToast.setText(text);
+            }
+            mToast.show();
+            return true;
+        }
+    };
+
+    private OnItemClickListener mOnItemClickListener = new OnItemClickListener() {
+        @Override
+        public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+            // Notify the active callbacks interface (the activity, if the
+            // fragment is attached to one) that an item has been selected.
+            mCallbacks.onItemSelected(position);
+        }
+    };
 
     private Toast mToast;
 
@@ -112,8 +151,7 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         inflater.inflate(R.menu.fragment_item_list, menu);
         mMenu = menu;
-        menu.findItem(R.id.menu_toggle_sticky).setChecked(
-                ((StickyGridHeadersGridView)mGridView).areHeadersSticky());
+        menu.findItem(R.id.menu_toggle_sticky).setChecked(mGridView.areHeadersSticky());
     }
 
     @Override
@@ -130,56 +168,15 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
     }
 
     @Override
-    public void onHeaderClick(AdapterView<?> parent, View view, long id) {
-        String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText() + " was tapped.";
-        if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(text);
-        }
-        mToast.show();
-    }
-
-    @Override
-    public boolean onHeaderLongClick(AdapterView<?> parent, View view, long id) {
-        String text = "Header " + ((TextView)view.findViewById(android.R.id.text1)).getText() + " was long pressed.";
-        if (mToast == null) {
-            mToast = Toast.makeText(getActivity(), text, Toast.LENGTH_SHORT);
-        } else {
-            mToast.setText(text);
-        }
-        mToast.show();
-        return true;
-    }
-
-    @Override
-    public void onItemClick(AdapterView<?> gridView, View view, int position, long id) {
-        // Notify the active callbacks interface (the activity, if the
-        // fragment is attached to one) that an item has been selected.
-        mCallbacks.onItemSelected(position);
-    }
-
-    @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_toggle_sticky:
                 item.setChecked(!item.isChecked());
-                ((StickyGridHeadersGridView)mGridView)
-                        .setAreHeadersSticky(!((StickyGridHeadersGridView)mGridView)
-                                .areHeadersSticky());
+                mGridView.setAreHeadersSticky(!mGridView.areHeadersSticky());
 
                 return true;
-            case R.id.menu_use_list_adapter:
-                mGridView.setAdapter(new ArrayAdapter<String>(getActivity(), R.layout.item,
-                        getResources().getStringArray(R.array.countries)));
-                mMenu.findItem(R.id.menu_use_list_adapter).setVisible(false);
-                mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(true);
-                mMenu.findItem(R.id.menu_toggle_sticky).setVisible(false);
-                return true;
             case R.id.menu_use_sticky_adapter:
-                mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity()
-                        .getApplicationContext(), getResources().getStringArray(R.array.countries),
-                        R.layout.header, R.layout.item));
+                mGridView.setAdapter(new CountriesAdapter(getActivity().getApplicationContext()));
                 mMenu.findItem(R.id.menu_use_list_adapter).setVisible(true);
                 mMenu.findItem(R.id.menu_toggle_sticky).setVisible(true);
                 mMenu.findItem(R.id.menu_use_sticky_adapter).setVisible(false);
@@ -204,8 +201,8 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        mGridView = (GridView)view.findViewById(R.id.asset_grid);
-        mGridView.setOnItemClickListener(this);
+        mGridView = (StickyHeadersGridView)view.findViewById(R.id.asset_grid);
+        mGridView.setOnItemClickListener(mOnItemClickListener);
 
         /*
          * Currently set in the XML layout, but this is how you would do it in
@@ -213,9 +210,7 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
          */
         // mGridView.setColumnWidth((int) calculatePixelsFromDips(100));
         // mGridView.setNumColumns(StickyGridHeadersGridView.AUTO_FIT);
-        mGridView.setAdapter(new StickyGridHeadersSimpleArrayAdapter<String>(getActivity()
-                .getApplicationContext(), getResources().getStringArray(R.array.countries),
-                R.layout.header, R.layout.item));
+        mGridView.setAdapter(new CountriesAdapter(getActivity()));
 
         if (savedInstanceState != null) {
             mFirstVisible = savedInstanceState.getInt(KEY_LIST_POSITION);
@@ -227,9 +222,6 @@ public class ItemListFragment extends Fragment implements OnItemClickListener,
         if (savedInstanceState != null && savedInstanceState.containsKey(STATE_ACTIVATED_POSITION)) {
             setActivatedPosition(savedInstanceState.getInt(STATE_ACTIVATED_POSITION));
         }
-
-        ((StickyGridHeadersGridView)mGridView).setOnHeaderClickListener(this);
-        ((StickyGridHeadersGridView)mGridView).setOnHeaderLongClickListener(this);
 
         setHasOptionsMenu(true);
     }
