@@ -24,9 +24,6 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 
-import java.util.ArrayList;
-import java.util.List;
-
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
  * add sections and headers.
