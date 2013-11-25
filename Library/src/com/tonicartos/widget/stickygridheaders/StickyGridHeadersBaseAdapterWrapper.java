@@ -24,6 +24,9 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.FrameLayout;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Adapter wrapper to insert extra views and otherwise hack around GridView to
  * add sections and headers.
@@ -61,13 +64,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         @Override
         public void onChanged() {
             updateCount();
-            notifyDataSetChanged();
         }
 
         @Override
         public void onInvalidated() {
             mCounted = false;
-            notifyDataSetInvalidated();
         }
     };
 
@@ -234,6 +235,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
+        super.registerDataSetObserver(observer);
         mDelegate.registerDataSetObserver(observer);
     }
 
@@ -245,6 +247,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
+        super.unregisterDataSetObserver(observer);
         mDelegate.unregisterDataSetObserver(observer);
     }
 
