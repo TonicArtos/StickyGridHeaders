@@ -561,20 +561,41 @@ public class StickyGridHeadersGridView extends GridView implements OnScrollListe
     @Override
     public void setOnItemClickListener(android.widget.AdapterView.OnItemClickListener listener) {
         this.mOnItemClickListener = listener;
-        super.setOnItemClickListener(this);
+        if (listener == null)
+        {
+            super.setOnItemClickListener(null);
+        }
+        else
+        {
+            super.setOnItemClickListener(this);
+        }
     }
 
     @Override
     public void setOnItemLongClickListener(
             android.widget.AdapterView.OnItemLongClickListener listener) {
         this.mOnItemLongClickListener = listener;
-        super.setOnItemLongClickListener(this);
+        if (listener == null)
+        {
+            super.setOnItemLongClickListener(null);
+        }
+        else
+        {
+            super.setOnItemLongClickListener(this);
+        }
     }
 
     @Override
     public void setOnItemSelectedListener(android.widget.AdapterView.OnItemSelectedListener listener) {
         this.mOnItemSelectedListener = listener;
-        super.setOnItemSelectedListener(this);
+        if (listener == null)
+        {
+            super.setOnItemSelectedListener(null);
+        }
+        else
+        {
+            super.setOnItemSelectedListener(this);
+        }
     }
 
     @Override
