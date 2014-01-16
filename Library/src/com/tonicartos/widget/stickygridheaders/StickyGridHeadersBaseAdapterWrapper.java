@@ -61,13 +61,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
         @Override
         public void onChanged() {
             updateCount();
-            notifyDataSetChanged();
         }
 
         @Override
         public void onInvalidated() {
             mCounted = false;
-            notifyDataSetInvalidated();
         }
     };
 
@@ -234,6 +232,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public void registerDataSetObserver(DataSetObserver observer) {
+        super.registerDataSetObserver(observer);
         mDelegate.registerDataSetObserver(observer);
     }
 
@@ -245,6 +244,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
 
     @Override
     public void unregisterDataSetObserver(DataSetObserver observer) {
+        super.unregisterDataSetObserver(observer);
         mDelegate.unregisterDataSetObserver(observer);
     }
 
