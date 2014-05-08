@@ -277,6 +277,11 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
      * @return The count of unfilled spaces in the last row.
      */
     private int unFilledSpacesInHeaderGroup(int header) {
+        //If mNumColumns is equal to zero we will have a divide by 0 exception
+        if(mNumColumns == 0){
+            return 0;
+        }
+
         int remainder = mDelegate.getCountForHeader(header) % mNumColumns;
         return remainder == 0 ? 0 : mNumColumns - remainder;
     }
