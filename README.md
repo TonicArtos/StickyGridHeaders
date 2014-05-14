@@ -1,6 +1,6 @@
 # StickyGridHeaders
 
-StickyGridHeaders is an Android library that provides a `GridView` that shows
+StickyGridHeaders is an Android library for Android 2.3+ that provides a `GridView` that shows
 items in sections with headers. By default the section headers stick to the top
 like the People app in Android 4.x but this can be turned off.
 StickyGridHeaders also automatically sizes its rows to the largest item in the
@@ -32,7 +32,7 @@ that work to you so you can implement a specific solution for your data set.
 ### Including in your Project
 
 This library can be used as a `.jar` file included in the `libs/` directory of your
-project. The latest version is available from 
+project. The latest version is available from
 [Google Drive](https://docs.google.com/file/d/0B5I7vIqOHIjZQW9rcFFRdWtwYk0/edit?usp=sharing).
 
 For Maven users, StickyGridHeaders can now be easily included by specifying it as
@@ -49,7 +49,7 @@ a dependency:
 ## Compatibility
 
 The simple adapter interface has the same signature as
-`StickyListHeadersAdapter` so if you are using the StickyListHeaders library 
+`StickyListHeadersAdapter` so if you are using the StickyListHeaders library
 your adapters are already ready for StickyGridHeaders.
 
 
