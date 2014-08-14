@@ -18,8 +18,7 @@ package com.tonicartos.stickygridheadersexample;
 
 import android.content.Intent;
 import android.os.Bundle;
-
-import com.actionbarsherlock.app.SherlockFragmentActivity;
+import android.support.v7.app.ActionBarActivity;
 
 /**
  * An activity representing a list of Items. This activity has different
@@ -38,7 +37,7 @@ import com.actionbarsherlock.app.SherlockFragmentActivity;
  * 
  * @author Tonic Artos
  */
-public class ItemListActivity extends SherlockFragmentActivity implements ItemListFragment.Callbacks {
+public class ItemListActivity extends ActionBarActivity implements ItemListFragment.Callbacks {
     /**
      * Whether or not the activity is in two-pane mode, i.e. running on a tablet
      * device.

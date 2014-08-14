@@ -1,3 +1,4 @@
+
 package com.tonicartos.widget.stickygridheaders;
 
 import android.database.DataSetObserver;
@@ -6,9 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ListAdapter;
 
-public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements StickyGridHeadersBaseAdapter {
-    private ListAdapter mDelegate;
-
+public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements
+        StickyGridHeadersBaseAdapter {
     private DataSetObserver mDataSetObserver = new DataSetObserver() {
         @Override
         public void onChanged() {
@@ -21,18 +21,38 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
         }
     };
 
+    private ListAdapter mDelegate;
+
     public StickyGridHeadersListAdapterWrapper(ListAdapter adapter) {
         mDelegate = adapter;
-        adapter.registerDataSetObserver(mDataSetObserver);
+        if (adapter != null) {
+            adapter.registerDataSetObserver(mDataSetObserver);
+        }
     }
 
     @Override
     public int getCount() {
+        if (mDelegate == null) {
+            return 0;
+        }
         return mDelegate.getCount();
     }
 
     @Override
+    public int getCountForHeader(int header) {
+        return 0;
+    }
+
+    @Override
+    public View getHeaderView(int position, View convertView, ViewGroup parent) {
+        return null;
+    }
+
+    @Override
     public Object getItem(int position) {
+        if (mDelegate == null) {
+            return null;
+        }
         return mDelegate.getItem(position);
     }
 
@@ -42,13 +62,8 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     }
 
     @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
-        return mDelegate.getView(position, convertView, parent);
-    }
-
-    @Override
-    public int getCountForHeader(int header) {
-        return 0;
+    public int getItemViewType(int position) {
+        return mDelegate.getItemViewType(position);
     }
 
     @Override
@@ -57,8 +72,18 @@ public class StickyGridHeadersListAdapterWrapper extends BaseAdapter implements 
     }
 
     @Override
-    public View getHeaderView(int position, View convertView, ViewGroup parent) {
-        return null;
+    public View getView(int position, View convertView, ViewGroup parent) {
+        return mDelegate.getView(position, convertView, parent);
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return mDelegate.getViewTypeCount();
+    }
+
+    @Override
+    public boolean hasStableIds() {
+        return mDelegate.hasStableIds();
     }
 
 }
