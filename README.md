@@ -1,4 +1,8 @@
 # StickyGridHeaders
+## Replacement project at [SuperSLiM](https://github.com/TonicArtos/SuperSLiM)
+**This repository is now Deprecated and will no longer see any development.**
+
+*The replacement [SuperSLiM](https://github.com/TonicArtos/SuperSLiM) is an implementation of a layout manager on top of RecyclerView. It offers extensible layouts per section, and multiple display modes for headers, including sticky headers. Really, it is better in every way with superior performance, configuration, and is not a hack of ListView, which should completely sell you on it.*
 
 StickyGridHeaders is an Android library for Android 2.3+ that provides a `GridView` that shows
 items in sections with headers. By default the section headers stick to the top
