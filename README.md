@@ -1,6 +1,6 @@
 # StickyGridHeaders
 ## Replacement project at [SuperSLiM](https://github.com/TonicArtos/SuperSLiM)
-**This repository is now Deprecated and will no longer see any development.**
+**This repository is abandoned and will no longer see any development or support.**
 
 *The replacement [SuperSLiM](https://github.com/TonicArtos/SuperSLiM) is an implementation of a layout manager on top of RecyclerView. It offers extensible layouts per section, and multiple display modes for headers, including sticky headers. Really, it is better in every way with superior performance, configuration, and is not a hack of ListView, which should completely sell you on it.*
 
