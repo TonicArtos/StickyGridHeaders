@@ -5,9 +5,9 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen" />
-    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print" />
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/pygment_trac.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
 
     <!--[if lt IE 9]>
     <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
@@ -21,14 +21,23 @@
       <div class="inner">
         <h1>Stickygridheaders</h1>
         <h2>An Android Library that makes it easy to make grid views with sectioned data and headers that stick to the top.</h2>
-        <a href="https://github.com/TonicArtos/StickyGridHeaders" class="button"><small>View project on</small>GitHub</a>
+        <a href="https://github.com/TonicArtos/StickyGridHeaders" class="button"><small>View project on</small> GitHub</a>
       </div>
     </header>
 
     <div id="content-wrapper">
       <div class="inner clearfix">
         <section id="main-content">
-          <h1>StickyGridHeaders</h1>
+          <h1>
+<a id="stickygridheaders" class="anchor" href="#stickygridheaders" aria-hidden="true"><span class="octicon octicon-link"></span></a>StickyGridHeaders</h1>
+
+<h2>
+<a id="replacement-project-at-superslim" class="anchor" href="#replacement-project-at-superslim" aria-hidden="true"><span class="octicon octicon-link"></span></a>Replacement project at <a href="https://tonicartos.github.io/SuperSLiM">SuperSLiM</a>
+</h2>
+
+<p><strong>This repository is abandoned and will no longer see any development or support.</strong></p>
+
+<p><em>The replacement <a href="https://tonicartos.github.io/SuperSLiM">SuperSLiM</a> is an implementation of a layout manager on top of RecyclerView. It offers extensible layouts per section, and multiple display modes for headers, including sticky headers. Really, it is better in every way with superior performance, configuration, and is not a hack of ListView, which should completely sell you on it.</em></p>
 
 <p>StickyGridHeaders is an Android library that provides a <code>GridView</code> that shows
 items in sections with headers. By default the section headers stick to the top
@@ -39,14 +48,16 @@ row.</p>
 <p>StickyGridHeaders has been designed to be adapter compatible with, and was
 inspired by, <a href="http://github.com/emilsjolander/StickyListHeaders">StickyListHeaders</a>.</p>
 
-<h2>Roadmap</h2>
+<h2>
+<a id="roadmap" class="anchor" href="#roadmap" aria-hidden="true"><span class="octicon octicon-link"></span></a>Roadmap</h2>
 
 <p>Version 1.0.1 has been released!</p>
 
 <p>Development on <code>master</code> will now focus on bringing the headers into the view hierarchy
 and resolving dpad navigation issues.</p>
 
-<h2>Usage</h2>
+<h2>
+<a id="usage" class="anchor" href="#usage" aria-hidden="true"><span class="octicon octicon-link"></span></a>Usage</h2>
 
 <p><code>StickyGridHeadersGridView</code> is a drop-in replacement of any <code>GridView</code> in your
 application and is used in the same manner. To display headers your <code>ListAdapter</code> must implement
@@ -56,21 +67,22 @@ to decide between the 'Simple' version which automatically does some housework
 to enable the grid sections and headers, or the 'Base' version which leaves
 that work to you so you can implement a specific solution for your data set.</p>
 
-<p>The standard <code>ListViewAdapter</code> is also supported allowing you to drop in StickyGridHeaders and
-later enhance your adapter</p>
+<p>The standard <code>ListView</code> is also supported in case you just want the benefit of 
+the improved row height calculations, the rows are sized to match the height of
+all items in the row, in StickyGridHeaders.</p>
 
 <p>The simple adapter interface has the same signature as
-<code>StickyListHeadersAdapter</code>, so if you are using the StickyListHeaders library
-your adapters are already fully ready for StickyGridHeaders. All you need to do is declare that your class
-implements <code>StickyGridHeadersSimpleAdapter</code></p>
+<code>StickyListHeadersAdapter</code> so if you are using the StickyListHeaders library
+your adapters are already fully ready for StickyGridHeaders.</p>
 
-<h3>Including in your Project</h3>
+<h3>
+<a id="including-in-your-project" class="anchor" href="#including-in-your-project" aria-hidden="true"><span class="octicon octicon-link"></span></a>Including in your Project</h3>
 
 <p>This library can be used as a <code>.jar</code> file included in the <code>libs/</code> directory of your
 project. The latest version is available from 
 <a href="https://docs.google.com/file/d/0B5I7vIqOHIjZQW9rcFFRdWtwYk0/edit?usp=sharing">Google Drive</a>.</p>
 
-<p>For Maven users, StickyGridHeaders (stable) can now be easily included by specifying it as
+<p>For Maven users, StickyGridHeaders can now be easily included by specifying it as
 a dependency:</p>
 
 <pre><code>&lt;dependency&gt;
@@ -80,12 +92,15 @@ a dependency:</p>
 &lt;/dependency&gt;
 </code></pre>
 
-<h2>Example</h2>
+<h2>
+<a id="example" class="anchor" href="#example" aria-hidden="true"><span class="octicon octicon-link"></span></a>Example</h2>
 
-<p><img src="http://2.bp.blogspot.com/-czumJI4itgs/UQpW0mUNkII/AAAAAAAAGvY/WjjKTk3rF0s/s1600/screens-portrait-smaller.png" alt="Example App Portrait Screenshots"><img src="http://4.bp.blogspot.com/-S_BbhWX6wTY/UQpW0cwUGEI/AAAAAAAAGvU/zzJXj-PcVbY/s1600/screen-landscape-smaller.png" alt="Example App Portrait Screenshots">
+<p><img src="http://2.bp.blogspot.com/-czumJI4itgs/UQpW0mUNkII/AAAAAAAAGvY/WjjKTk3rF0s/s1600/screens-portrait-smaller.png" alt="Example App Portrait Screenshots">
+<img src="http://4.bp.blogspot.com/-S_BbhWX6wTY/UQpW0cwUGEI/AAAAAAAAGvU/zzJXj-PcVbY/s1600/screen-landscape-smaller.png" alt="Example App Portrait Screenshots">
 The example source code is included in this repository.</p>
 
-<h2>License</h2>
+<h2>
+<a id="license" class="anchor" href="#license" aria-hidden="true"><span class="octicon octicon-link"></span></a>License</h2>
 
 <pre><code>Copyright 2013 Tonic Artos
 
@@ -115,7 +130,7 @@ limitations under the License.
 
           <p class="repo-owner"><a href="https://github.com/TonicArtos/StickyGridHeaders"></a> is maintained by <a href="https://github.com/TonicArtos">TonicArtos</a>.</p>
 
-          <p>This page was generated by <a href="pages.github.com">GitHub Pages</a> using the Architect theme by <a href="http://twitter.com/jasonlong">Jason Long</a>.</p>
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
         </aside>
       </div>
     </div>
