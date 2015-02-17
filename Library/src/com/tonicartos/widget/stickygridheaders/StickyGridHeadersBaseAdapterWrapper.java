@@ -443,7 +443,7 @@ public class StickyGridHeadersBaseAdapterWrapper extends BaseAdapter {
                 int heightSpec = getChildMeasureSpec(
                         MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED), 0, params.height);
                 int widthSpec = getChildMeasureSpec(
-                        MeasureSpec.makeMeasureSpec(mGridView.getWidth(), MeasureSpec.EXACTLY), 0,
+                        MeasureSpec.makeMeasureSpec(mGridView.getWidth(), MeasureSpec.UNSPECIFIED), 0,
                         params.width);
                 v.measure(widthSpec, heightSpec);
             }
